@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/09 12:25:04 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/09 19:25:54 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,6 @@
 
 int main(int argc, char **argv, char **envp)
 {
-	char *tmp = readline("PUT STR : ");
+	char *tmp = readline("CuteShell S2 % ");
 	printf("GET! : %s\n", tmp);
 }
