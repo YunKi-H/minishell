@@ -6,11 +6,11 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/09 19:25:54 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/10 10:32:09 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//gcc minishell.c -lreadline -L/opt/homebrew/Cellar/readline
+//cc minishell.c -lreadline -L/opt/homebrew/Cellar/readline
 
 #include <unistd.h>
 //fork, getcwd, chdir, unlink, execve, dup, dup2, pipe
@@ -44,6 +44,16 @@
 
 int main(int argc, char **argv, char **envp)
 {
-	char *tmp = readline("CuteShell S2 % ");
-	printf("GET! : %s\n", tmp);
+	// char *tmp = readline("CuteShell S2 % ");
+	// printf("GET! : %s\n", tmp);
+
+	// char *arg[3];
+	// arg[0] = "ls";
+	// arg[1] = "-al";
+	// arg[2] = NULL;
+	// execve("/bin/ls", arg, envp);
+	for (int i = 0; envp[i]; i++)
+	{
+		printf("mem : %p , env : %s\n", envp[i], envp[i]);
+	}
 }
