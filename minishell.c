@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/10 10:32:09 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/13 10:11:49 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,6 @@ int main(int argc, char **argv, char **envp)
 	// execve("/bin/ls", arg, envp);
 	for (int i = 0; envp[i]; i++)
 	{
-		printf("mem : %p , env : %s\n", envp[i], envp[i]);
+		printf("env : %s\n", envp[i]);
 	}
 }
