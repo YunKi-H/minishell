@@ -6,54 +6,102 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/13 10:11:49 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/14 16:31:11 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//cc minishell.c -lreadline -L/opt/homebrew/Cellar/readline
+#include "minishell.h"
 
-#include <unistd.h>
-//fork, getcwd, chdir, unlink, execve, dup, dup2, pipe
-//isatty, ttyname, ttyslot
-#include <stdlib.h>
-//malloc, free, getenv
-#include <stdio.h>
-//printf, stderror
-#include <signal.h>
-//signal, kill
-#include <fcntl.h>
-//write, open, read, close
-#include <dirent.h>
-//opendir, readdir, closedir
-#include <errno.h>
-//errno
-#include <termios.h>
-//tcsetattr, tcgetattr, tgetent
-#include <term.h>
-//tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
-#include <sys/wait.h>
-//wait, waitpid, wait3, wait4
-#include <sys/stat.h>
-//stat, lstat, fstat
-#include <sys/ioctl.h>
-//ioctl
-#include <readline/readline.h>
-//readline, rl_on_new_line, rl_replace_line, rl_redisplay
-#include <readline/history.h>
-//add_history
-
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char *argv[], char **envp)
 {
-	// char *tmp = readline("CuteShell S2 % ");
-	// printf("GET! : %s\n", tmp);
-
-	// char *arg[3];
-	// arg[0] = "ls";
-	// arg[1] = "-al";
-	// arg[2] = NULL;
-	// execve("/bin/ls", arg, envp);
-	for (int i = 0; envp[i]; i++)
+	(void)argc;
+	(void)argv;
+	(void)envp;
+	while (1)
 	{
-		printf("env : %s\n", envp[i]);
+		parse(readline("Minishell % "));
 	}
+}
+
+int	pwd()
+{
+	char	*buf;
+
+	buf = getcwd(NULL, 42);
+	if (buf)
+		printf("%s\n", buf);
+	else
+		return (1);
+	free(buf);
+	return (0);
+}
+
+static int	is_opt_echo(const char *word)
+{
+	int	i;
+
+	i = 0;
+	if (word[i] != '-')
+		return (0);
+	else
+	{
+		i += 1;
+		while (word[i])
+		{
+			if (word[i] != 'n')
+				return (0);
+			i += 1;
+		}
+	}
+	return (1);
+}
+
+int echo(const char **parsed)
+{
+	int	option;
+	int	i;
+
+	i = 1;
+	option = 0;
+	while (is_opt_echo(parsed[i]))
+	{
+		option = 1;
+		i += 1;
+	}
+	while (parsed[i])
+	{
+		printf("%s", parsed[i]);
+		i += 1;
+		if (parsed[i])
+			printf(" ");
+	}
+	if (!option)
+		printf("\n");
+	return (0);
+}
+
+void	parse(char *line)
+{
+	char	**parsed;
+
+	if (line)
+		add_history(line);
+	parsed = ft_split(line, ' ');
+	if (!ft_strncmp("pwd", parsed[0], ft_strlen(parsed[0])))
+		pwd();
+	if (!ft_strncmp("echo", parsed[0], ft_strlen(parsed[0])))
+		echo((const char **)parsed);
+	if (!ft_strncmp("cd", parsed[0], ft_strlen(parsed[0])))
+		cd((const char **)parsed);
+}
+
+int	cd(const char **parsed)
+{
+	if (!parsed[1])
+		return (chdir(getenv("HOME")));
+	if (parsed[2])
+		return (1);
+	if (parsed[1][0] == '~' && !parsed[1][1])
+		return (chdir(getenv("HOME")));
+	return (chdir(parsed[1]));
 }
