@@ -6,7 +6,7 @@
 #    By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/13 11:39:56 by yuhwang           #+#    #+#              #
-#    Updated: 2022/05/13 11:47:29 by yuhwang          ###   ########.fr        #
+#    Updated: 2022/05/14 15:57:20 by yuhwang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,8 +38,7 @@ clean		:
 				$(RM) $(OBJS)
 
 fclean		:	clean
-				$(MAKE) -C $(LIBFTDIR) fclean
-				$(RM) $(NAME)
+				$(RM) $(NAME) $(LIBFTDIR)/$(LIBFTFILE)
 
 re			:
 				$(MAKE) fclean

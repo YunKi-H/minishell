@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/13 11:47:17 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/14 16:30:12 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,3 +40,11 @@
 #include <readline/history.h>
 //add_history
 #include "../libft/libft.h"
+
+#define _MAX_PATH 2000
+
+void	parse(char *line);
+//builtins
+int		pwd();
+int		echo(const char **parsed);
+int		cd(const char **parsed);
