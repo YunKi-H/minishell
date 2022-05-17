@@ -6,63 +6,77 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/17 14:54:12 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/17 19:55:11 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
+#ifndef MINISHELL_H
+# define MINISHELL_H
+# include <unistd.h>
 //fork, getcwd, chdir, unlink, execve, dup, dup2, pipe
 //isatty, ttyname, ttyslot
-#include <stdlib.h>
+# include <stdlib.h>
 //malloc, free, getenv
-#include <stdio.h>
+# include <stdio.h>
 //printf, stderror
-#include <signal.h>
+# include <signal.h>
 //signal, kill
-#include <fcntl.h>
+# include <fcntl.h>
 //write, open, read, close
-#include <dirent.h>
+# include <dirent.h>
 //opendir, readdir, closedir
-#include <errno.h>
+# include <errno.h>
 //errno
-#include <termios.h>
+# include <termios.h>
 //tcsetattr, tcgetattr, tgetent
-#include <term.h>
+# include <term.h>
 //tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
-#include <stdbool.h>
-#include <sys/wait.h>
+# include <sys/wait.h>
 //wait, waitpid, wait3, wait4
-#include <sys/stat.h>
+# include <sys/stat.h>
 //stat, lstat, fstat
-#include <sys/ioctl.h>
+# include <sys/ioctl.h>
 //ioctl
-#include <readline/readline.h>
+# include <readline/readline.h>
 //readline, rl_on_new_line, rl_replace_line, rl_redisplay
-#include <readline/history.h>
+# include <readline/history.h>
 //add_history
-#include "../libft/libft.h"
+# include "../libft/libft.h"
 
-typedef struct s_cmdline t_cmdline;
-typedef struct s_cmdtable t_cmdtable;
-typedef struct s_env t_env;
-typedef struct s_envtable t_envtable;
-
-struct s_cmdtable
+enum e_bool
 {
-	t_cmdline	*head;
-	size_t		size;
+	FALSE,
+	TRUE
+};
+
+typedef struct s_sh			t_sh;
+typedef struct s_table		t_table;
+typedef struct s_cmdline	t_cmdline;
+typedef struct s_token		t_token;
+typedef struct s_env		t_env;
+
+struct s_sh
+{
+	t_table	*cmdt;
+	t_table	*envt;
+};
+
+struct s_table
+{
+	void	*head;
 };
 
 struct s_cmdline
 {
-	char				**tokens;
-	bool				*redirect;
+	t_table				*tokens;
 	struct s_cmdline	*next;
 };
 
-struct s_envtable
+struct s_token
 {
-	t_env	*head;
+	char			*token;
+	int				type;
+	struct s_token	*next;
 };
 
 struct s_env
@@ -72,39 +86,20 @@ struct s_env
 	struct s_env	*next;
 };
 
-typedef struct s_sh
-{
-	t_cmdtable	*cmdt;
-	t_envtable	*envt;
-}	t_sh;
-
-int			parsing(char *line, t_cmdtable *cmdt);
-
+// init
 t_sh		*init_sh(char **envp);
-t_cmdtable	*init_cmdt();
-t_cmdline	*init_cmdl();
-t_envtable	*init_envt(char **envp);
+t_table		*init_table(void);
+t_cmdline	*init_cmdl(void);
+t_table		*init_envt(char **envp);
 t_env		*init_env(const char *key, const char *value);
+// free
+void		free_cmdt(t_table *cmdt);
+void		free_tokens(t_table *tokens);
+// struct
+void		env_add_back(t_table *envt, char *env);
+void		cmdl_add_back(t_table *cmdt, t_cmdline *cmdl);
+// parse
+int			parsing(char *line, t_table *cmdt);
+int			isifs(char c);
 
-void	env_add_back(t_envtable *envt, char *env);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//builtins
-void	parse(char *line, t_sh *shell);
-int		pwd();
-int		echo(const char **parsed);
-int		cd(const char **parsed);
-int		env(const char **env);
+#endif
