@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/17 14:54:18 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/17 20:08:12 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	main(int argc, char *argv[], char **envp)
 
 }
 
-// cmd init
+// init
 t_sh	*init_sh(char **envp)
 {
 	t_sh	*sh;
@@ -53,42 +53,40 @@ t_sh	*init_sh(char **envp)
 	sh = (t_sh *)malloc(sizeof(t_sh));
 	if (!sh)
 		return (NULL);
-	sh->cmdt = init_cmdt();
+	sh->cmdt = init_table();
 	sh->envt = init_envt(envp);
 	return (sh);
 }
 
-t_cmdtable	*init_cmdt()
+t_table	*init_table(void)
 {
-	t_cmdtable	*cmdt;
+	t_table	*table;
 
-	cmdt = (t_cmdtable *)malloc(sizeof(t_cmdtable));
-	if (!cmdt)
+	table = (t_table *)malloc(sizeof(t_table));
+	if (!table)
 		return (NULL);
-	cmdt->head = NULL;
-	cmdt->size = 0;
-	return (cmdt);
+	table->head = NULL;
+	return (table);
 }
 
-t_cmdline	*init_cmdl()
+t_cmdline	*init_cmdl(void)
 {
 	t_cmdline	*cmdl;
 
 	cmdl = (t_cmdline *)malloc(sizeof(t_cmdline));
 	if (!cmdl)
 		return (NULL);
-	cmdl->tokens = NULL;
-	cmdl->redirect = NULL;
+	cmdl->tokens = init_table();
 	cmdl->next = NULL;
 	return (cmdl);
 }
 
-t_envtable	*init_envt(char **envp)
+t_table	*init_envt(char **envp)
 {
-	t_envtable	*envt;
+	t_table	*envt;
 	int			i;
 
-	envt = (t_envtable *)malloc(sizeof(t_envtable));
+	envt = (t_table *)malloc(sizeof(t_table));
 	if (!envt)
 		return (NULL);
 	envt->head = NULL;
@@ -114,7 +112,41 @@ t_env	*init_env(const char *key, const char *value)
 	return (node);
 }
 
-void	env_add_back(t_envtable *envt, char *env)
+// free
+void	free_cmdt(t_table *cmdt)
+{
+	t_cmdline	*tmp;
+	t_cmdline	*cur;
+
+	cur = cmdt->head;
+	while (cur)
+	{
+		tmp = cur;
+		cur = cur->next;
+		free_tokens(tmp->tokens);
+		free(tmp);
+	}
+	free(cmdt);
+}
+
+void	free_tokens(t_table *tokens)
+{
+	t_token	*tmp;
+	t_token	*cur;
+
+	cur = tokens->head;
+	while (cur)
+	{
+		tmp = cur;
+		cur = cur->next;
+		free(tmp->token);
+		free(tmp);
+	}
+	free(tokens);
+}
+
+// struct 제어
+void	env_add_back(t_table *envt, char *env)
 {
 	t_env	*tmp;
 	char	*key;
@@ -133,67 +165,53 @@ void	env_add_back(t_envtable *envt, char *env)
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-int	parsing(char *line, t_cmdtable *cmdt)
+void	cmdl_add_back(t_table *cmdt, t_cmdline *cmdl)
 {
-	int	i;
+	t_cmdline	*tmp;
 
+	if (!cmdt->head)
+		cmdt->head = cmdl;
+	else
+	{
+		tmp = cmdt->head;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = cmdl;
+	}
+}
+
+void	token_add_back(t_cmdline *cmdl, char *token, int type)
+{
+
+}
+
+// parse
+int	parsing(char *line, t_table *cmdt)
+{
+	t_cmdline	*cmdl;
+	t_token		*token;
+	int	i;
+	int	st;
+	int	flag_dq;
+	int	flag_sq;
+
+	free_cmdt(cmdt);
 	i = 0;
+	flag_dq = FALSE;
+	flag_sq = FALSE;
+	while (isifs(line[i]))
+		i += 1;
+	st = i;
 	while (line[i])
 	{
-		if (line[i] == '\"')
+		if (line[i] == '\"' && !flag_sq)
+			flag_dq = !flag_dq;
+		if (line[i] == '\'' && !flag_dq)
+			flag_sq = !flag_sq;
+		if (isifs(line[i]) && !flag_dq && !flag_sq)
 		{
-			// i += 1;
-			while (line[i] == '\"' && line[i])
-			{
-				if (line[i] == '$')
-				{
-					// i += 1;
-				}
-				// i += 1;
-			}
-		}
-		if (line[i] == '\'')
-		{
-			// i += 1;
+			tokenize(line, st, i);
+			st = i + 1;
 		}
 		if (line[i] == '$')
 		{
@@ -205,137 +223,15 @@ int	parsing(char *line, t_cmdtable *cmdt)
 		}
 		i += 1;
 	}
+	free(line);
 }
 
+int	isifs(char c)
+{
+	return (c == ' ' || c == '\t' || c == '\n');
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//builtin
-// int	pwd()
-// {
-// 	char	*buf;
-
-// 	buf = getcwd(NULL, 42);
-// 	if (buf)
-// 		printf("%s\n", buf);
-// 	else
-// 		return (1);
-// 	free(buf);
-// 	return (0);
-// }
-
-// static int	is_opt_echo(const char *word)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	if (word[i] != '-')
-// 		return (0);
-// 	else
-// 	{
-// 		i += 1;
-// 		while (word[i])
-// 		{
-// 			if (word[i] != 'n')
-// 				return (0);
-// 			i += 1;
-// 		}
-// 	}
-// 	return (1);
-// }
-
-// int echo(const char **parsed)
-// {
-// 	int	option;
-// 	int	i;
-
-// 	i = 1;
-// 	option = 0;
-// 	while (is_opt_echo(parsed[i]))
-// 	{
-// 		option = 1;
-// 		i += 1;
-// 	}
-// 	while (parsed[i])
-// 	{
-// 		printf("%s", parsed[i]);
-// 		i += 1;
-// 		if (parsed[i])
-// 			printf(" ");
-// 	}
-// 	if (!option)
-// 		printf("\n");
-// 	return (0);
-// }
-
-// int	cd(const char **parsed)
-// {
-// 	if (!parsed[1])
-// 		return (chdir(getenv("HOME")));
-// 	if (parsed[2])
-// 		return (1);
-// 	if (parsed[1][0] == '~' && !parsed[1][1])
-// 		return (chdir(getenv("HOME"))); //구조체에 HOME 경로를 따로 저장(init 할떄)
-// 	return (chdir(parsed[1]));
-// }
-
-// int	env(const char **env)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (env[i])
-// 	{
-// 		printf("%s\n",env[i]);
-// 		i += 1;
-// 	}
-// 	return (0);
-// }
-
-// void	parse(char *line, t_sh *sh)
-// {
-// 	char	**parsed;
-
-// 	if (line)
-// 		add_history(line);
-// 	parsed = ft_split(line, ' ');
-// 	if (!ft_strncmp("pwd", parsed[0], ft_strlen(parsed[0])))
-// 		pwd();
-// 	if (!ft_strncmp("echo", parsed[0], ft_strlen(parsed[0])))
-// 		echo((const char **)parsed);
-// 	if (!ft_strncmp("cd", parsed[0], ft_strlen(parsed[0])))
-// 		cd((const char **)parsed);
-// 	if (!ft_strncmp("env", parsed[0], ft_strlen(parsed[0])))
-// 		env((const char **)sh->env);
-// }
+char	*tokenize(char *line, int start, int end)
+{
+	return (line);
+}
