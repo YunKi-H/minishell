@@ -6,22 +6,36 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/17 20:08:12 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/20 19:00:02 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-#include <string.h>
-
 int	main(int argc, char *argv[], char **envp)
 {
-	t_sh	*msh;
+	// t_sh	*msh;
 
 	(void)argc;
 	(void)argv;
-	msh = init_sh(envp);
+	(void)envp;
+	// msh = init_sh(envp);
 
+	t_buf	*test;
+	test = new_buf();
+	char *tmp = "abcdefghikljsdfhbnojnfbop oijfapobknadsdfbfdobnjokjop oaksdjfoasfhbniosejbno woakdgjn";
+	int i = 0;
+	while (tmp[i])
+	{
+		buf_append(test, tmp[i]);
+		i += 1;
+	}
+	printf("%d %s\n", test->size, test->buffer);
+
+	// getenv 동적할당여부 (false)
+	// char *test = getenv("PWD");
+	// printf("PWD : %s\n", test);
+	// free(test);
 
 	// 환경변수 제대로 init 된거 test
 	// t_env	*tmp = msh->envt->head;
@@ -55,6 +69,7 @@ t_sh	*init_sh(char **envp)
 		return (NULL);
 	sh->cmdt = init_table();
 	sh->envt = init_envt(envp);
+	sh->sh_error = 0;
 	return (sh);
 }
 
@@ -180,58 +195,88 @@ void	cmdl_add_back(t_table *cmdt, t_cmdline *cmdl)
 	}
 }
 
-void	token_add_back(t_cmdline *cmdl, char *token, int type)
-{
+// void	token_add_back(t_cmdline *cmdl, char *token, int type)
+// {
 
-}
+// }
 
 // parse
-int	parsing(char *line, t_table *cmdt)
-{
-	t_cmdline	*cmdl;
-	t_token		*token;
-	int	i;
-	int	st;
-	int	flag_dq;
-	int	flag_sq;
+// int	parsing(char *line, t_sh *sh)
+// {
+// 	t_cmdline	*cmdl;
+// 	t_token		*token;
+// 	int	i;
+// 	int	st;
+// 	int	flag_quote;
 
-	free_cmdt(cmdt);
-	i = 0;
-	flag_dq = FALSE;
-	flag_sq = FALSE;
-	while (isifs(line[i]))
-		i += 1;
-	st = i;
-	while (line[i])
-	{
-		if (line[i] == '\"' && !flag_sq)
-			flag_dq = !flag_dq;
-		if (line[i] == '\'' && !flag_dq)
-			flag_sq = !flag_sq;
-		if (isifs(line[i]) && !flag_dq && !flag_sq)
-		{
-			tokenize(line, st, i);
-			st = i + 1;
-		}
-		if (line[i] == '$')
-		{
-			// i += 1;
-		}
-		if (line[i] == '|')
-		{
-			// i += 1;
-		}
-		i += 1;
-	}
-	free(line);
+// 	free_cmdt(sh->cmdt);
+// 	i = 0;
+// 	st = 0;
+// 	flag_quote = FALSE;
+// 	while (line[i])
+// 	{
+// 		if (line[i] == '\'' && !(flag_quote & DOUBLE_Q))
+// 			flag_quote ^= SINGLE_Q;
+// 		if (line[i] == '\"' && !(flag_quote & SINGLE_Q))
+// 			flag_quote ^= DOUBLE_Q;
+// 		if (line[i] == '|' && !flag_quote)
+// 		{
+// 			char	*cmdline = ft_substr(line, st, i - st);
+// 			st = i + 1;
+// 		}
+// 		i += 1;
+// 	}
+// 	free(line);
+// }
+
+// char	*replace_env(char *cmdline, t_sh *sh)
+// {
+// 	char	*replaced;
+// 	int		flag_quote;
+// 	int		len;
+// 	int		i;
+
+// 	i = 0;
+// 	len = ft_strlen(cmdline);
+// 	flag_quote = FALSE;
+// 	while (cmdline[i])
+// 	{
+// 		if (cmdline[i] == '\'' && !(flag_quote & DOUBLE_Q))
+// 			flag_quote ^= SINGLE_Q;
+// 		if (cmdline[i] == '\"' && !(flag_quote & SINGLE_Q))
+// 			flag_quote ^= DOUBLE_Q;
+// 		if (cmdline[i] == '$' && !(flag_quote & SINGLE_Q))
+// 		{
+// 			char	*key;
+// 			char	*value;
+// 			int		key_len = 0;
+// 			while (iskey(cmdline[i + 1 + key_len]))
+// 				key_len += 1;
+// 			key = ft_substr(cmdline, i + 1, key_len);
+// 			t_env	*env = sh->envt->head;
+// 			while (env)
+// 			{
+// 				if (ft_strncmp(key, env->key, ft_strlen(key + 1)))
+// 					break ;
+// 				env = env->next;
+// 			}
+// 			if (!env)
+// 				value = ft_strdup("");
+// 			else
+// 				value = ft_strdup(env->value);
+// 			free(key);
+// 			free(value);
+// 		}
+// 		i += 1;
+// 	}
+// }
+
+int	iskey(char c)
+{
+	return (ft_isalnum(c) || c == '_');
 }
 
 int	isifs(char c)
 {
 	return (c == ' ' || c == '\t' || c == '\n');
-}
-
-char	*tokenize(char *line, int start, int end)
-{
-	return (line);
 }

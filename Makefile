@@ -6,7 +6,7 @@
 #    By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/13 11:39:56 by yuhwang           #+#    #+#              #
-#    Updated: 2022/05/14 15:57:20 by yuhwang          ###   ########.fr        #
+#    Updated: 2022/05/20 18:58:11 by yuhwang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ CFLAGS		=	-Wall -Wextra -Werror
 RM			=	rm -f
 
 SRCS		=	minishell.c	\
+				buffer.c	\
 
 OBJS		=	$(SRCS:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/17 19:55:11 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/20 18:52:07 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,18 @@
 # include <readline/history.h>
 //add_history
 # include "../libft/libft.h"
+# include "buffer.h"
 
 enum e_bool
 {
 	FALSE,
 	TRUE
+};
+
+enum e_flag
+{
+	SINGLE_Q = 1,
+	DOUBLE_Q = 1 << 1
 };
 
 typedef struct s_sh			t_sh;
@@ -59,6 +66,7 @@ struct s_sh
 {
 	t_table	*cmdt;
 	t_table	*envt;
+	int		sh_error;
 };
 
 struct s_table
@@ -99,7 +107,8 @@ void		free_tokens(t_table *tokens);
 void		env_add_back(t_table *envt, char *env);
 void		cmdl_add_back(t_table *cmdt, t_cmdline *cmdl);
 // parse
-int			parsing(char *line, t_table *cmdt);
+int			parsing(char *line, t_sh *sh);
 int			isifs(char c);
+int			iskey(char c);
 
 #endif
