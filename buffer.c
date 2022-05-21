@@ -6,13 +6,13 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 17:11:55 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/20 18:52:41 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/20 19:47:39 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "buffer.h"
 
-t_buf	*new_buf()
+t_buf	*buf_new()
 {
 	t_buf *buf;
 
@@ -29,8 +29,21 @@ void	buf_append(t_buf *buf, char c)
 
 	buf->buffer[buf->len] = c;
 	buf->len += 1;
-	if (buf->len == buf->size)
+	buf->buffer[buf->len] = '\0';
+	if (buf->len + 1 == buf->size)
 		buf_expand(buf);
+}
+
+void	buf_append_str(t_buf *buf, char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		buf_append(buf, str[i]);
+		i += 1;
+	}
 }
 
 void	buf_expand(t_buf *buf)
@@ -49,11 +62,6 @@ void	buf_expand(t_buf *buf)
 	new[i] = '\0';
 	free(buf->buffer);
 	buf->buffer = new;
-}
-
-void	buf_clear(t_buf *buf)
-{
-	buf->len = 0;
 }
 
 void	buf_destroy(t_buf *buf)

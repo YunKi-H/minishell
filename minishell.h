@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/20 18:52:07 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/21 08:35:09 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ enum e_bool
 enum e_flag
 {
 	SINGLE_Q = 1,
-	DOUBLE_Q = 1 << 1
+	DOUBLE_Q = 2
 };
 
 typedef struct s_sh			t_sh;
@@ -108,6 +108,7 @@ void		env_add_back(t_table *envt, char *env);
 void		cmdl_add_back(t_table *cmdt, t_cmdline *cmdl);
 // parse
 int			parsing(char *line, t_sh *sh);
+char		*replace_env(char *cmdline, t_sh *sh);
 int			isifs(char c);
 int			iskey(char c);
 

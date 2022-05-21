@@ -6,7 +6,7 @@
 #    By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/13 11:39:56 by yuhwang           #+#    #+#              #
-#    Updated: 2022/05/20 18:58:11 by yuhwang          ###   ########.fr        #
+#    Updated: 2022/05/20 19:36:08 by yuhwang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ OBJS		=	$(SRCS:.c=.o)
 
 $(NAME)		:	$(OBJS)
 				$(MAKE) bonus -C $(LIBFTDIR)
-				$(CC) -o $@ $^ $(LIBFTDIR)/$(LIBFTFILE) $(READLINE)
+				$(CC) $(CFLAGS) -o $@ $^ $(LIBFTDIR)/$(LIBFTFILE) $(READLINE)
 
 all			:	$(NAME)
 

@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/20 19:00:02 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/21 08:47:22 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,31 @@
 
 int	main(int argc, char *argv[], char **envp)
 {
-	// t_sh	*msh;
+	t_sh	*msh;
 
 	(void)argc;
 	(void)argv;
 	(void)envp;
-	// msh = init_sh(envp);
+	msh = init_sh(envp);
 
-	t_buf	*test;
-	test = new_buf();
-	char *tmp = "abcdefghikljsdfhbnojnfbop oijfapobknadsdfbfdobnjokjop oaksdjfoasfhbniosejbno woakdgjn";
-	int i = 0;
-	while (tmp[i])
-	{
-		buf_append(test, tmp[i]);
-		i += 1;
-	}
-	printf("%d %s\n", test->size, test->buffer);
+	// replace_env test
+	char *test = "abc\"$PWD\" '$HOME' $ ";
+	char *tmp = replace_env(test, msh);
+	printf("%s\n", tmp);
+
+	// buffer test
+	// t_buf	*test;
+	// test = new_buf();
+	// char *tmp = "abcdefghikljsdfhbnojnfbop oijfapobknadsdfbfdobnjokjop oaksdjfoasfhbniosejbno woakdgjnaaaaaaaaaaa";
+	// int i = 0;
+	// while (tmp[i])
+	// {
+	// 	printf("%d\n", i);
+	// 	buf_append(test, tmp[i]);
+	// 	i += 1;
+	// }
+	// system("leaks minishell");
+	// printf("%d %s\n", test->size, test->buffer);
 
 	// getenv 동적할당여부 (false)
 	// char *test = getenv("PWD");
@@ -205,71 +213,78 @@ void	cmdl_add_back(t_table *cmdt, t_cmdline *cmdl)
 // {
 // 	t_cmdline	*cmdl;
 // 	t_token		*token;
-// 	int	i;
-// 	int	st;
+// 	int	i[2];
 // 	int	flag_quote;
 
 // 	free_cmdt(sh->cmdt);
-// 	i = 0;
-// 	st = 0;
+// 	ft_bzero(i, sizeof(int) * 2);
 // 	flag_quote = FALSE;
-// 	while (line[i])
+// 	while (line[i[1]])
 // 	{
-// 		if (line[i] == '\'' && !(flag_quote & DOUBLE_Q))
+// 		if (line[i[1]] == '\'' && !(flag_quote & DOUBLE_Q))
 // 			flag_quote ^= SINGLE_Q;
-// 		if (line[i] == '\"' && !(flag_quote & SINGLE_Q))
+// 		if (line[i[1]] == '\"' && !(flag_quote & SINGLE_Q))
 // 			flag_quote ^= DOUBLE_Q;
-// 		if (line[i] == '|' && !flag_quote)
+// 		if (line[i[1]] == '|' && !flag_quote)
 // 		{
-// 			char	*cmdline = ft_substr(line, st, i - st);
-// 			st = i + 1;
+// 			char	*cmdline = ft_substr(line, i[0], i[1] - i[0]);
+// 			i[0] = i[1] + 1;
 // 		}
-// 		i += 1;
+// 		i[1] += 1;
 // 	}
 // 	free(line);
 // }
 
-// char	*replace_env(char *cmdline, t_sh *sh)
-// {
-// 	char	*replaced;
-// 	int		flag_quote;
-// 	int		len;
-// 	int		i;
+char	*replace_env(char *cmdl, t_sh *sh)
+{
+	t_buf	*buf;
+	char	*replaced;
+	int		flag_quote;
+	int		i;
 
-// 	i = 0;
-// 	len = ft_strlen(cmdline);
-// 	flag_quote = FALSE;
-// 	while (cmdline[i])
-// 	{
-// 		if (cmdline[i] == '\'' && !(flag_quote & DOUBLE_Q))
-// 			flag_quote ^= SINGLE_Q;
-// 		if (cmdline[i] == '\"' && !(flag_quote & SINGLE_Q))
-// 			flag_quote ^= DOUBLE_Q;
-// 		if (cmdline[i] == '$' && !(flag_quote & SINGLE_Q))
-// 		{
-// 			char	*key;
-// 			char	*value;
-// 			int		key_len = 0;
-// 			while (iskey(cmdline[i + 1 + key_len]))
-// 				key_len += 1;
-// 			key = ft_substr(cmdline, i + 1, key_len);
-// 			t_env	*env = sh->envt->head;
-// 			while (env)
-// 			{
-// 				if (ft_strncmp(key, env->key, ft_strlen(key + 1)))
-// 					break ;
-// 				env = env->next;
-// 			}
-// 			if (!env)
-// 				value = ft_strdup("");
-// 			else
-// 				value = ft_strdup(env->value);
-// 			free(key);
-// 			free(value);
-// 		}
-// 		i += 1;
-// 	}
-// }
+	i = 0;
+	flag_quote = FALSE;
+	buf = buf_new();
+	while (cmdl[i])
+	{
+		if (cmdl[i] == '$' && iskey(cmdl[i + 1]) && !(flag_quote & SINGLE_Q))
+		{
+			char	*key;
+			char	*value;
+			int		key_len = 0;
+			i += 1;
+			while (iskey(cmdl[i + key_len]))
+				key_len += 1;
+			key = ft_substr(cmdl, i, key_len);
+			t_env	*env = sh->envt->head;
+			while (env)
+			{
+				// printf("key : %s, env.key : %s, strcmp = %d\n", key, env->key, \
+				// 	ft_strncmp(key, env->key, -1));
+				if (!ft_strncmp(key, env->key, -1))
+					break ;
+				env = env->next;
+			}
+			if (!env)
+				value = ft_strdup("");
+			else
+				value = ft_strdup(env->value);
+			buf_append_str(buf, value);
+			free(key);
+			free(value);
+			i += key_len;
+		}
+		if (cmdl[i] == '\'' && !(flag_quote & DOUBLE_Q))
+			flag_quote ^= SINGLE_Q;
+		if (cmdl[i] == '\"' && !(flag_quote & SINGLE_Q))
+			flag_quote ^= DOUBLE_Q;
+		buf_append(buf, cmdl[i]);
+		i += 1;
+	}
+	replaced = ft_strdup(buf->buffer);
+	buf_destroy(buf);
+	return (replaced);
+}
 
 int	iskey(char c)
 {
