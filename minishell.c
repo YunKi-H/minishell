@@ -6,13 +6,11 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/17 20:08:12 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/21 08:47:22 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-#include <string.h>
 
 int	main(int argc, char *argv[], char **envp)
 {
@@ -20,8 +18,32 @@ int	main(int argc, char *argv[], char **envp)
 
 	(void)argc;
 	(void)argv;
+	(void)envp;
 	msh = init_sh(envp);
 
+	// replace_env test
+	char *test = "abc\"$PWD\" '$HOME' $ ";
+	char *tmp = replace_env(test, msh);
+	printf("%s\n", tmp);
+
+	// buffer test
+	// t_buf	*test;
+	// test = new_buf();
+	// char *tmp = "abcdefghikljsdfhbnojnfbop oijfapobknadsdfbfdobnjokjop oaksdjfoasfhbniosejbno woakdgjnaaaaaaaaaaa";
+	// int i = 0;
+	// while (tmp[i])
+	// {
+	// 	printf("%d\n", i);
+	// 	buf_append(test, tmp[i]);
+	// 	i += 1;
+	// }
+	// system("leaks minishell");
+	// printf("%d %s\n", test->size, test->buffer);
+
+	// getenv 동적할당여부 (false)
+	// char *test = getenv("PWD");
+	// printf("PWD : %s\n", test);
+	// free(test);
 
 	// 환경변수 제대로 init 된거 test
 	// t_env	*tmp = msh->envt->head;
@@ -55,6 +77,7 @@ t_sh	*init_sh(char **envp)
 		return (NULL);
 	sh->cmdt = init_table();
 	sh->envt = init_envt(envp);
+	sh->sh_error = 0;
 	return (sh);
 }
 
@@ -180,58 +203,95 @@ void	cmdl_add_back(t_table *cmdt, t_cmdline *cmdl)
 	}
 }
 
-void	token_add_back(t_cmdline *cmdl, char *token, int type)
-{
+// void	token_add_back(t_cmdline *cmdl, char *token, int type)
+// {
 
-}
+// }
 
 // parse
-int	parsing(char *line, t_table *cmdt)
-{
-	t_cmdline	*cmdl;
-	t_token		*token;
-	int	i;
-	int	st;
-	int	flag_dq;
-	int	flag_sq;
+// int	parsing(char *line, t_sh *sh)
+// {
+// 	t_cmdline	*cmdl;
+// 	t_token		*token;
+// 	int	i[2];
+// 	int	flag_quote;
 
-	free_cmdt(cmdt);
+// 	free_cmdt(sh->cmdt);
+// 	ft_bzero(i, sizeof(int) * 2);
+// 	flag_quote = FALSE;
+// 	while (line[i[1]])
+// 	{
+// 		if (line[i[1]] == '\'' && !(flag_quote & DOUBLE_Q))
+// 			flag_quote ^= SINGLE_Q;
+// 		if (line[i[1]] == '\"' && !(flag_quote & SINGLE_Q))
+// 			flag_quote ^= DOUBLE_Q;
+// 		if (line[i[1]] == '|' && !flag_quote)
+// 		{
+// 			char	*cmdline = ft_substr(line, i[0], i[1] - i[0]);
+// 			i[0] = i[1] + 1;
+// 		}
+// 		i[1] += 1;
+// 	}
+// 	free(line);
+// }
+
+char	*replace_env(char *cmdl, t_sh *sh)
+{
+	t_buf	*buf;
+	char	*replaced;
+	int		flag_quote;
+	int		i;
+
 	i = 0;
-	flag_dq = FALSE;
-	flag_sq = FALSE;
-	while (isifs(line[i]))
-		i += 1;
-	st = i;
-	while (line[i])
+	flag_quote = FALSE;
+	buf = buf_new();
+	while (cmdl[i])
 	{
-		if (line[i] == '\"' && !flag_sq)
-			flag_dq = !flag_dq;
-		if (line[i] == '\'' && !flag_dq)
-			flag_sq = !flag_sq;
-		if (isifs(line[i]) && !flag_dq && !flag_sq)
+		if (cmdl[i] == '$' && iskey(cmdl[i + 1]) && !(flag_quote & SINGLE_Q))
 		{
-			tokenize(line, st, i);
-			st = i + 1;
+			char	*key;
+			char	*value;
+			int		key_len = 0;
+			i += 1;
+			while (iskey(cmdl[i + key_len]))
+				key_len += 1;
+			key = ft_substr(cmdl, i, key_len);
+			t_env	*env = sh->envt->head;
+			while (env)
+			{
+				// printf("key : %s, env.key : %s, strcmp = %d\n", key, env->key, \
+				// 	ft_strncmp(key, env->key, -1));
+				if (!ft_strncmp(key, env->key, -1))
+					break ;
+				env = env->next;
+			}
+			if (!env)
+				value = ft_strdup("");
+			else
+				value = ft_strdup(env->value);
+			buf_append_str(buf, value);
+			free(key);
+			free(value);
+			i += key_len;
 		}
-		if (line[i] == '$')
-		{
-			// i += 1;
-		}
-		if (line[i] == '|')
-		{
-			// i += 1;
-		}
+		if (cmdl[i] == '\'' && !(flag_quote & DOUBLE_Q))
+			flag_quote ^= SINGLE_Q;
+		if (cmdl[i] == '\"' && !(flag_quote & SINGLE_Q))
+			flag_quote ^= DOUBLE_Q;
+		buf_append(buf, cmdl[i]);
 		i += 1;
 	}
-	free(line);
+	replaced = ft_strdup(buf->buffer);
+	buf_destroy(buf);
+	return (replaced);
+}
+
+int	iskey(char c)
+{
+	return (ft_isalnum(c) || c == '_');
 }
 
 int	isifs(char c)
 {
 	return (c == ' ' || c == '\t' || c == '\n');
-}
-
-char	*tokenize(char *line, int start, int end)
-{
-	return (line);
 }
