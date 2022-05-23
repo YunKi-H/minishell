@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/23 16:10:59 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/23 18:51:36 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,10 @@ int	main(int argc, char *argv[], char **envp)
 	while (1)
 	{
 		// parsing(readline("Minishell % "), msh);
-		parsing("echo            \"he\"l'l'\"o\" '|' \"cat\" -e", msh);
+		parsing(ft_strdup("echo            \"he\"l'l'\"o\" '|' \"cat\" -e"), msh);
 		print_cmdt(msh);
+		// type
+		// remove quote
 		break ;
 	}
 
@@ -101,6 +103,7 @@ t_table	*init_table(void)
 	if (!table)
 		return (NULL);
 	table->head = NULL;
+	table->size = 0;
 	return (table);
 }
 
@@ -198,6 +201,7 @@ void	env_add_back(t_table *envt, char *env)
 			tmp = tmp->next;
 		tmp->next = init_env(key, value);
 	}
+	envt->size += 1;
 }
 
 void	cmdl_add_back(t_table *cmdt, t_cmdline *cmdl)
@@ -233,6 +237,7 @@ void	token_add_back(t_table *tokens, char *token)
 			cur = cur->next;
 		cur->next = tmp;
 	}
+	tokens->size += 1;
 }
 
 t_table *tokenize(char *line)
@@ -257,7 +262,6 @@ t_table *tokenize(char *line)
 		if ((isifs(line[i]) || !line[i]) && !flag_quote)
 		{
 			char *token = ft_strdup(buf->buffer);
-			printf("'tokenize'\t'%s'\n", token);
 			token_add_back(tokens, token);
 			buf->len = 0;
 			while (isifs(line[i]))
@@ -309,7 +313,7 @@ void	parsing(char *line, t_sh *sh)
 		i += 1;
 	}
 	buf_destroy(buf);
-	// free(line); 아직 동적할당한 라인이 아님
+	free(line);
 }
 
 char	*replace_env(char *cmdl, t_sh *sh)
@@ -378,11 +382,11 @@ void	print_cmdt(t_sh *sh)
 	{
 		t_token	*token;
 		int j = 0;
-		printf("cmdl[%d] : ", i);
+		printf("----cmdl[%d]----\n", i);
 		token = cmdl->tokens->head;
 		while (token)
 		{
-			printf("token[%d] : [%s],", j, token->token);
+			printf("token[%d] : [%s] ", j, token->token);
 			token = token->next;
 			j += 1;
 			printf("\n");
