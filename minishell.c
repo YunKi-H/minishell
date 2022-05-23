@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/21 08:47:22 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/21 11:47:41 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,26 @@
 
 int	main(int argc, char *argv[], char **envp)
 {
-	t_sh	*msh;
-
 	(void)argc;
 	(void)argv;
 	(void)envp;
+
+	t_sh	*msh;
 	msh = init_sh(envp);
 
 	// replace_env test
-	char *test = "abc\"$PWD\" '$HOME' $ ";
-	char *tmp = replace_env(test, msh);
-	printf("%s\n", tmp);
+	// char *test1 = replace_env("abcdefg hijklmn opqrstu ", msh);
+	// printf("test1 = %s\n", test1);
+	// char *test2 = replace_env("$USER", msh);
+	// printf("test2 = %s\n", test2);
+	// char *test3 = replace_env("\"$USER\" '$USER' \"$USER\"", msh);
+	// printf("test3 = %s\n", test3);
+	// char *test4 = replace_env("$USER$AAA$USER$USER$AAA", msh);
+	// printf("test4 = %s\n", test4);
+	// char *test5 = replace_env("$ \"$\" $ ", msh);
+	// printf("test5 = %s\n", test5);
+	// char *test6 = replace_env("$USER\"abc\"", msh);
+	// printf("test6 = %s\n", test6);
 
 	// buffer test
 	// t_buf	*test;
@@ -247,6 +256,10 @@ char	*replace_env(char *cmdl, t_sh *sh)
 	buf = buf_new();
 	while (cmdl[i])
 	{
+		if (cmdl[i] == '\'' && !(flag_quote & DOUBLE_Q))
+			flag_quote ^= SINGLE_Q;
+		if (cmdl[i] == '\"' && !(flag_quote & SINGLE_Q))
+			flag_quote ^= DOUBLE_Q;
 		if (cmdl[i] == '$' && iskey(cmdl[i + 1]) && !(flag_quote & SINGLE_Q))
 		{
 			char	*key;
@@ -259,8 +272,6 @@ char	*replace_env(char *cmdl, t_sh *sh)
 			t_env	*env = sh->envt->head;
 			while (env)
 			{
-				// printf("key : %s, env.key : %s, strcmp = %d\n", key, env->key, \
-				// 	ft_strncmp(key, env->key, -1));
 				if (!ft_strncmp(key, env->key, -1))
 					break ;
 				env = env->next;
@@ -274,12 +285,11 @@ char	*replace_env(char *cmdl, t_sh *sh)
 			free(value);
 			i += key_len;
 		}
-		if (cmdl[i] == '\'' && !(flag_quote & DOUBLE_Q))
-			flag_quote ^= SINGLE_Q;
-		if (cmdl[i] == '\"' && !(flag_quote & SINGLE_Q))
-			flag_quote ^= DOUBLE_Q;
-		buf_append(buf, cmdl[i]);
-		i += 1;
+		else
+		{
+			buf_append(buf, cmdl[i]);
+			i += 1;
+		}
 	}
 	replaced = ft_strdup(buf->buffer);
 	buf_destroy(buf);
