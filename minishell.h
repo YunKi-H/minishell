@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/23 15:18:48 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/23 18:31:21 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ struct s_sh
 struct s_table
 {
 	void	*head;
+	int		size;
 };
 
 struct s_cmdline
