@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/23 18:51:36 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/25 13:08:41 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,9 @@ int	main(int argc, char *argv[], char **envp)
 	// tokenize test
 	while (1)
 	{
-		// parsing(readline("Minishell % "), msh);
-		parsing(ft_strdup("echo            \"he\"l'l'\"o\" '|' \"cat\" -e"), msh);
-		print_cmdt(msh);
-		// type
-		// remove quote
+		parsing(readline("Minishell % "), msh);
+		// parsing(ft_strdup("echo            \"he\"l'l'\"o\" '|' \"cat\" -e"), msh);
+		// print_cmdt(msh);
 		break ;
 	}
 
@@ -217,6 +215,7 @@ void	cmdl_add_back(t_table *cmdt, t_cmdline *cmdl)
 			tmp = tmp->next;
 		tmp->next = cmdl;
 	}
+	cmdt->size += 1;
 }
 
 void	token_add_back(t_table *tokens, char *token)
@@ -255,10 +254,7 @@ t_table *tokenize(char *line)
 		i += 1;
 	while (TRUE)
 	{
-		if (line[i] == '\'' && !(flag_quote & DOUBLE_Q))
-			flag_quote ^= SINGLE_Q;
-		if (line[i] == '\"' && !(flag_quote & SINGLE_Q))
-			flag_quote ^= DOUBLE_Q;
+		toggle_flag_quote(line[i], &flag_quote);
 		if ((isifs(line[i]) || !line[i]) && !flag_quote)
 		{
 			char *token = ft_strdup(buf->buffer);
@@ -294,13 +290,9 @@ void	parsing(char *line, t_sh *sh)
 	i = 0;
 	while (TRUE)
 	{
-		if (line[i] == '\'' && !(flag_quote & DOUBLE_Q))
-			flag_quote ^= SINGLE_Q;
-		if (line[i] == '\"' && !(flag_quote & SINGLE_Q))
-			flag_quote ^= DOUBLE_Q;
+		toggle_flag_quote(line[i], &flag_quote);
 		if ((line[i] == '|' || !line[i]) && !flag_quote)
 		{
-			printf("%c\n", line[i]);
 			char	*cmdl = ft_strdup(buf->buffer);
 			buf->len = 0;
 			cmdl_add_back(sh->cmdt, init_cmdl(tokenize(replace_env(cmdl, sh))));
@@ -312,6 +304,9 @@ void	parsing(char *line, t_sh *sh)
 			break ;
 		i += 1;
 	}
+	// (파이프 || flag on) 문장이 끝날 경우  예외처리
+	if (line[i - 1] == '|' || flag_quote)
+		printf("Syntax Error\n");
 	buf_destroy(buf);
 	free(line);
 }
@@ -328,10 +323,7 @@ char	*replace_env(char *cmdl, t_sh *sh)
 	buf = buf_new();
 	while (cmdl[i])
 	{
-		if (cmdl[i] == '\'' && !(flag_quote & DOUBLE_Q))
-			flag_quote ^= SINGLE_Q;
-		if (cmdl[i] == '\"' && !(flag_quote & SINGLE_Q))
-			flag_quote ^= DOUBLE_Q;
+		toggle_flag_quote(cmdl[i], &flag_quote);
 		if (cmdl[i] == '$' && iskey(cmdl[i + 1]) && !(flag_quote & SINGLE_Q))
 		{
 			char	*key;
@@ -373,6 +365,14 @@ int	isifs(char c)
 	return (c == ' ' || c == '\t' || c == '\n');
 }
 
+void	toggle_flag_quote(char c, int *flag)
+{
+	if (c == '\'' && !(*flag & DOUBLE_Q))
+		*flag ^= SINGLE_Q;
+	if (c == '\"' && !(*flag & SINGLE_Q))
+		*flag ^= DOUBLE_Q;
+}
+
 void	print_cmdt(t_sh *sh)
 {
 	t_cmdline *cmdl;
@@ -391,8 +391,66 @@ void	print_cmdt(t_sh *sh)
 			j += 1;
 			printf("\n");
 		}
+		printf("----cmdl[%d]----\n", i);
 		i += 1;
-		printf("\n");
 		cmdl = cmdl->next;
 	}
+}
+
+char	**envttoevnp(t_table *envt)
+{
+	t_buf		*buf;
+	t_env		*tmp;
+	char		**result;
+	int			i;
+
+	buf = buf_new();
+	tmp = envt->head;
+	result = (char **)malloc(sizeof(char *) * (envt->size + 1));
+	i = 0;
+	while (tmp)
+	{
+		buf_append_str(buf, (char *)tmp->key);
+		buf_append(buf, '=');
+		buf_append_str(buf, (char *)tmp->value);
+		result[i] = ft_strdup(buf->buffer);
+		buf->len = 0;
+		i += 1;
+		tmp = tmp->next;
+	}
+	result[i] = NULL;
+	buf_destroy(buf);
+	return (result);
+}
+
+char	**cmdltocmdp(t_table *tokens)
+{
+	t_token		*tmp;
+	char		**result;
+	int			i;
+
+	tmp = tokens->head;
+	result = (char **)malloc(sizeof(char *) * (tokens->size + 1));
+	i = 0;
+	while (tmp)
+	{
+		result[i] = ft_strdup(tmp->token);
+		i += 1;
+		tmp = tmp->next;
+	}
+	result[i] = NULL;
+	return (result);
+}
+
+void	free_args(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args[i])
+	{
+		free(args[i]);
+		i += 1;
+	}
+	free(args);
 }
