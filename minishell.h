@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/23 18:31:21 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/25 12:55:23 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ t_env		*init_env(const char *key, const char *value);
 // free
 void		free_cmdt(t_table *cmdt);
 void		free_tokens(t_table *tokens);
+void		free_args(char **args);
 // struct
 void		env_add_back(t_table *envt, char *env);
 void		cmdl_add_back(t_table *cmdt, t_cmdline *cmdl);
@@ -112,10 +113,16 @@ void		token_add_back(t_table *tokens, char *token);
 void		parsing(char *readline, t_sh *sh);
 char		*replace_env(char *cmdline, t_sh *sh);
 t_table		*tokenize(char *line);
+// bool
 int			isifs(char c);
 int			iskey(char c);
+// utils
+void		toggle_flag_quote(char c, int *flag);
+// linked list -> char **
+char		**envttoevnp(t_table *envt);
+char		**cmdltocmdp(t_table *tokens);
 
 // debug
-void	print_cmdt(t_sh *sh);
+void		print_cmdt(t_sh *sh);
 
 #endif
