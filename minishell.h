@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/25 12:55:23 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/27 10:00:02 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,9 @@
 # include <stdlib.h>
 //malloc, free, getenv
 # include <stdio.h>
-//printf, stderror
+//printf
+# include <string.h>
+//strerror
 # include <signal.h>
 //signal, kill
 # include <fcntl.h>
@@ -116,6 +118,7 @@ t_table		*tokenize(char *line);
 // bool
 int			isifs(char c);
 int			iskey(char c);
+int			isredirect(char c);
 // utils
 void		toggle_flag_quote(char c, int *flag);
 // linked list -> char **
