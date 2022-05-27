@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/25 13:08:41 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/27 10:01:03 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	main(int argc, char *argv[], char **envp)
 	{
 		parsing(readline("Minishell % "), msh);
 		// parsing(ft_strdup("echo            \"he\"l'l'\"o\" '|' \"cat\" -e"), msh);
-		// print_cmdt(msh);
+		print_cmdt(msh);
 		break ;
 	}
 
@@ -306,7 +306,7 @@ void	parsing(char *line, t_sh *sh)
 	}
 	// (파이프 || flag on) 문장이 끝날 경우  예외처리
 	if (line[i - 1] == '|' || flag_quote)
-		printf("Syntax Error\n");
+		printf("%s\n", strerror(2));
 	buf_destroy(buf);
 	free(line);
 }
@@ -365,36 +365,17 @@ int	isifs(char c)
 	return (c == ' ' || c == '\t' || c == '\n');
 }
 
+int	isredirect(char c)
+{
+	return (c == '>' || c == '<');
+}
+
 void	toggle_flag_quote(char c, int *flag)
 {
 	if (c == '\'' && !(*flag & DOUBLE_Q))
 		*flag ^= SINGLE_Q;
 	if (c == '\"' && !(*flag & SINGLE_Q))
 		*flag ^= DOUBLE_Q;
-}
-
-void	print_cmdt(t_sh *sh)
-{
-	t_cmdline *cmdl;
-	int i = 0;
-	cmdl = sh->cmdt->head;
-	while (cmdl)
-	{
-		t_token	*token;
-		int j = 0;
-		printf("----cmdl[%d]----\n", i);
-		token = cmdl->tokens->head;
-		while (token)
-		{
-			printf("token[%d] : [%s] ", j, token->token);
-			token = token->next;
-			j += 1;
-			printf("\n");
-		}
-		printf("----cmdl[%d]----\n", i);
-		i += 1;
-		cmdl = cmdl->next;
-	}
 }
 
 char	**envttoevnp(t_table *envt)
@@ -453,4 +434,28 @@ void	free_args(char **args)
 		i += 1;
 	}
 	free(args);
+}
+
+void	print_cmdt(t_sh *sh)
+{
+	t_cmdline *cmdl;
+	int i = 0;
+	cmdl = sh->cmdt->head;
+	while (cmdl)
+	{
+		t_token	*token;
+		int j = 0;
+		printf("----cmdl[%d]----\n", i);
+		token = cmdl->tokens->head;
+		while (token)
+		{
+			printf("token[%d] : [%s] ", j, token->token);
+			token = token->next;
+			j += 1;
+			printf("\n");
+		}
+		printf("----cmdl[%d]----\n", i);
+		i += 1;
+		cmdl = cmdl->next;
+	}
 }
