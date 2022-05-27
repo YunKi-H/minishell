@@ -6,11 +6,51 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/27 10:01:03 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/27 20:01:03 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+// static void print_asciiart()
+// {
+// 	printf("\
+//              .. ..      ..  ...         ........  ..\n\
+//             .      ....   ..-::~        ........  ..\n\
+//           ..                .~~:              ..  ..\n\
+//          ..          .  .    .~:        ............\n\
+//      ....        .           .          ............\n\
+//     ~!;,         .       ....  .           ..     ..\n\
+//     ;:~.           ...  .......,           ..     ..\n\
+//     :;:. ...............,,,... ..            ....   \n\
+//      ,,...............,,,,,,.. .-           ......  \n\
+//       ,.,,,,,,,,,,,,,,,,,-,..   .          ..    .. \n\
+//       ,.,,,,,,,,,,,,,,,-#@,...   .          ......  \n\
+//       ,.,,,,,,,,,,,,,,-:@@,..    .           ....   \n\
+//       ,.,,,:;-,,,,,,,,;@@#...    .           .  .   \n\
+//       ,..,,$#@!,-,,,,,-@@,...     ,     ............\n\
+//       .....~@@@;,,............    .     ............\n\
+//       .....,*@@:,..     ............    \n\
+//       ......,,,...,*$=. .-~~-.....,,    .......  ..\n\
+//      ............$$=$$$$::;;~-..,,--    .......  ..\n\
+//      -.....,,,.,;:~*=$#$::!*:-,,----    ..       ..\n\
+//      -...,,-~~--!#$=$##:;*$!:~---~~,    .......  ....\n\
+//      -,,,-~:;::::$####:;*$=;~--~~~:     .......  ....\n\
+//      .,-,-~:;!!;;::*!:;!#=;:~~~~::;     ..       ..\n\
+//       ~--~~::;;#$!;:;;;:=:::~~:::;.     .......  ..\n\
+//       ~~~~~::::;!$$::~-!:::::::;;-      .......  ..\n\
+//       .:~~~:::::::;!::;::::;;;;!-                  \n\
+//        ~:::::::::::::~:::;;;!!*         ...........\n\
+//         ~;::::::;;;;;;;;;;!!*-          ...........\n\
+//          .*!;;;;;;;;;;;;!!**!;  ,,,.             ..\n\
+//             :***!*!!!!!!**!!;;~~~~~--.           ..\n\
+//                  ;******!;;;::~-::::~-           ..\n\
+//                 :;;;;!;;;:::::~-,::::~  \n\
+//                -~::::::::~~~~~~-,-:::~. \n\
+//               .~~~::::~~~~-~~:~-,,:::~, \n\
+//               ~:~~~~~~~~----~::-,.,~~~, \n\
+//              -~;~-----------~:;-,. ~~~  ...@yuhwang @yotak\n");
+// }
 
 int	main(int argc, char *argv[], char **envp)
 {
@@ -19,15 +59,44 @@ int	main(int argc, char *argv[], char **envp)
 
 	t_sh	*msh;
 	msh = init_sh(envp);
+	// print_asciiart();
 
-	// tokenize test
+	// unset test
+	t_env *env = msh->envt->head;
+	env->next->next = NULL;
 	while (1)
 	{
 		parsing(readline("Minishell % "), msh);
-		// parsing(ft_strdup("echo            \"he\"l'l'\"o\" '|' \"cat\" -e"), msh);
-		print_cmdt(msh);
-		break ;
+		_env(msh->envt);
+		t_cmdline	*cmdl = msh->cmdt->head;
+		_unset(msh, cmdl);
+		_env(msh->envt);
 	}
+
+	// export test
+	// t_env *env = msh->envt->head;
+	// env->next = NULL;
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	t_cmdline	*cmdl = msh->cmdt->head;
+	// 	_export(msh, cmdl);
+	// 	_env(msh->envt);
+	// }
+
+	// tokenize test
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	// parsing(ft_strdup("echo            \"he\"l'l'\"o\" '|' \"cat\" -e"), msh);
+	// 	print_cmdt(msh);
+	// 	break ;
+	// }
+
+	// env,pwd test
+	// _env(msh->envt);
+	// printf("-----------\n");
+	// _pwd();
 
 	// replace_env test
 	// char *test1 = replace_env("abcdefg hijklmn opqrstu ", msh);
@@ -263,7 +332,19 @@ t_table *tokenize(char *line)
 			while (isifs(line[i]))
 				i += 1;
 			if (!line[i])
-				break ;
+				break;
+		}
+		else if (isredirect(line, i) && !flag_quote)
+		{
+			if (buf->len)
+				token_add_back(tokens, ft_strdup(buf->buffer));
+			buf->len = 0;
+			token_add_back(tokens, ft_substr(line, i, isredirect(line, i)));
+			i += isredirect(line, i);
+			while (isifs(line[i]))
+				i += 1;
+			if (!line[i])
+				break;
 		}
 		else
 		{
@@ -310,7 +391,7 @@ void	parsing(char *line, t_sh *sh)
 	buf_destroy(buf);
 	free(line);
 }
-
+// TODO : $?
 char	*replace_env(char *cmdl, t_sh *sh)
 {
 	t_buf	*buf;
@@ -365,9 +446,20 @@ int	isifs(char c)
 	return (c == ' ' || c == '\t' || c == '\n');
 }
 
-int	isredirect(char c)
+int	isredirect(char *line, int i)
 {
-	return (c == '>' || c == '<');
+	int	result;
+
+	result = 0;
+	if (line[i] == '<' || line[i] == '>')
+	{
+		result += 1;
+		if (line[i + 1] && line[i] == line[i + 1])
+			result += 1;
+	}
+	else
+		result = 0;
+	return (result);
 }
 
 void	toggle_flag_quote(char c, int *flag)
@@ -458,4 +550,203 @@ void	print_cmdt(t_sh *sh)
 		i += 1;
 		cmdl = cmdl->next;
 	}
+}
+
+//builtins
+int	_echo(t_cmdline *cmdl)
+{
+	t_token	*token;
+	int		opt;
+
+	token = cmdl->tokens->head;
+	opt = FALSE;
+	token = token->next;
+	while (isopt_echo(token->token))
+	{
+		opt = TRUE;
+		token = token->next;
+	}
+	while (token)
+	{
+		if (token->type == ARG)
+		{
+			printf("%s", token->token);
+			if (token->next)
+				printf(" ");
+		}
+		token = token->next;
+	}
+	if (!opt)
+		printf("\n");
+	return (0);
+}
+
+int	isopt_echo(char *token)
+{
+	int	i;
+
+	i = 0;
+	if (token[i] != '-')
+		return (FALSE);
+	i += 1;
+	if (!token[i])
+		return (FALSE);
+	while (token[i])
+	{
+		if (token[i] != 'n')
+			return (FALSE);
+		i += 1;
+	}
+	return (TRUE);
+}
+
+int	_env(t_table *envt)
+{
+	t_env	*env;
+
+	env = envt->head;
+	while (env)
+	{
+		printf("%s", env->key);
+		printf("=");
+		printf("%s\n", env->value);
+		env = env->next;
+	}
+	return (0);
+}
+
+int	_export(t_sh *sh, t_cmdline *cmdl)
+{
+	t_token	*token;
+
+	token = cmdl->tokens->head;
+	if (!token->next)
+		return (_env(sh->envt));
+	while (token)
+	{
+		if (token->next)
+			token = token->next;
+		else
+			break ;
+		if (!ft_strchr(token->token, '=') && isvalid_key(token->token))
+			;
+		else if (!ft_strchr(token->token, '=') && !isvalid_key(token->token))
+		{
+			printf("export: `%s': not a valid identifier\n", token->token);
+			sh->sh_error = 1;
+			continue ;
+		}
+		else if (ft_strchr(token->token, '='))
+		{
+			char	*key;
+			char	*value;
+			t_env	*env;
+
+			key = ft_substr(token->token, 0, ft_strchr(token->token, '=') - token->token);
+			if (!isvalid_key(key))
+			{
+				printf("export: `%s': not a valid identifier\n", token->token);
+				sh->sh_error = 1;
+				free(key);
+				continue ;
+			}
+			value = ft_strdup(ft_strchr(token->token, '=') + 1);
+			if (!sh->envt->head)
+			{
+				sh->envt->head = init_env(key, value);
+				continue ;
+			}
+			env = sh->envt->head;
+			while (env->next)
+			{
+				if (!ft_strncmp(env->key, key, -1))
+					break ;
+				env = env->next;
+			}
+			if (!ft_strncmp(env->key, key, -1))
+			{
+				free((void *)env->value);
+				env->value = value;
+			}
+			else
+				env->next = init_env(key, value);
+		}
+	}
+	return (sh->sh_error);
+}
+
+int	_unset(t_sh *sh, t_cmdline *cmdl)
+{
+	t_token	*token;
+
+	token = cmdl->tokens->head;
+	while (token)
+	{
+		if (token->next)
+			token = token->next;
+		else
+			break ;
+		if (!isvalid_key(token->token))
+		{
+			printf("export: `%s': not a valid identifier\n", token->token);
+			sh->sh_error = 1;
+			continue ;
+		}
+		else
+		{
+			t_env	*env;
+			t_env	*prev;
+
+			env = sh->envt->head;
+			prev = env;
+			while (env->next)
+			{
+				if (!ft_strncmp(env->key, token->token, -1))
+					break ;
+				if (prev->next == env)
+					prev = prev->next;
+				env = env->next;
+			}
+			if (!ft_strncmp(env->key, token->token, -1))
+			{
+				if (prev == sh->envt->head)
+					sh->envt->head = env->next;
+				else
+					prev->next = env->next;
+				free((void *)env->key);
+				free((void *)env->value);
+				free(env);
+			}
+		}
+	}
+	return (sh->sh_error);
+}
+
+int	isvalid_key(char *key)
+{
+	int	i;
+
+	i = 0;
+	if (!ft_isalpha(key[i]) && key[i] != '_')
+		return (FALSE);
+	i += 1;
+	while (key[i])
+	{
+		if (!ft_isalnum(key[i]) && key[i] != '_')
+			return (FALSE);
+		i += 1;
+	}
+	return (TRUE);
+}
+
+int	_pwd()
+{
+	char	*buf;
+
+	buf = getcwd(NULL, 0);
+	if (!buf)
+		return (-1);
+	printf("%s\n", buf);
+	free(buf);
+	return (0);
 }

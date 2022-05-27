@@ -6,43 +6,43 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/27 10:00:02 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/27 20:00:49 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # include <unistd.h>
-//fork, getcwd, chdir, unlink, execve, dup, dup2, pipe
-//isatty, ttyname, ttyslot
+// fork, getcwd, chdir, unlink, execve, dup, dup2, pipe
+// isatty, ttyname, ttyslot
 # include <stdlib.h>
-//malloc, free, getenv
+// malloc, free, getenv
 # include <stdio.h>
-//printf
+// printf
 # include <string.h>
-//strerror
+// strerror
 # include <signal.h>
-//signal, kill
+// signal, kill
 # include <fcntl.h>
-//write, open, read, close
+// write, open, read, close
 # include <dirent.h>
-//opendir, readdir, closedir
+// opendir, readdir, closedir
 # include <errno.h>
-//errno
+// errno
 # include <termios.h>
-//tcsetattr, tcgetattr, tgetent
+// tcsetattr, tcgetattr, tgetent
 # include <term.h>
-//tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
+// tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 # include <sys/wait.h>
-//wait, waitpid, wait3, wait4
+// wait, waitpid, wait3, wait4
 # include <sys/stat.h>
-//stat, lstat, fstat
+// stat, lstat, fstat
 # include <sys/ioctl.h>
-//ioctl
+// ioctl
 # include <readline/readline.h>
-//readline, rl_on_new_line, rl_replace_line, rl_redisplay
+// readline, rl_on_new_line, rl_replace_line, rl_redisplay
 # include <readline/history.h>
-//add_history
+// add_history
 # include "../libft/libft.h"
 # include "buffer.h"
 
@@ -56,6 +56,14 @@ enum e_flag
 {
 	SINGLE_Q = 1,
 	DOUBLE_Q = 2
+};
+
+enum e_type
+{
+	ARG			=	0b00000000,
+	CMD			=	0b00000001,
+	FILENAME	=	0b00000010,
+	REDIRECT	=	0b00000100
 };
 
 typedef struct s_sh			t_sh;
@@ -118,12 +126,20 @@ t_table		*tokenize(char *line);
 // bool
 int			isifs(char c);
 int			iskey(char c);
-int			isredirect(char c);
+int			isredirect(char *line, int i);
+int			isopt_echo(char *token);
+int			isvalid_key(char *key);
 // utils
 void		toggle_flag_quote(char c, int *flag);
 // linked list -> char **
 char		**envttoevnp(t_table *envt);
 char		**cmdltocmdp(t_table *tokens);
+// builtins
+int			_echo(t_cmdline *cmdl);
+int			_env(t_table *envt);
+int			_pwd();
+int			_export(t_sh *sh, t_cmdline *cmdl);
+int			_unset(t_sh *sh, t_cmdline *cmdl);
 
 // debug
 void		print_cmdt(t_sh *sh);
