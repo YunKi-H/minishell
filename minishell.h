@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/27 20:00:49 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/28 17:01:37 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,18 +129,21 @@ int			iskey(char c);
 int			isredirect(char *line, int i);
 int			isopt_echo(char *token);
 int			isvalid_key(char *key);
+int			isnum(char *token);
 // utils
 void		toggle_flag_quote(char c, int *flag);
+t_env		*_getenv(char *key, t_table *envt);
 // linked list -> char **
 char		**envttoevnp(t_table *envt);
 char		**cmdltocmdp(t_table *tokens);
 // builtins
-int			_echo(t_cmdline *cmdl);
-int			_env(t_table *envt);
-int			_pwd();
-int			_export(t_sh *sh, t_cmdline *cmdl);
-int			_unset(t_sh *sh, t_cmdline *cmdl);
-
+int			ft_echo(t_cmdline *cmdl);
+int			ft_env(t_table *envt);
+int			ft_pwd();
+int			ft_export(t_sh *sh, t_cmdline *cmdl);
+int			ft_unset(t_sh *sh, t_cmdline *cmdl);
+int			ft_cd(t_sh *sh, t_cmdline *cmdl);
+int			ft_exit(t_sh *sh, t_cmdline *cmdl);
 // debug
 void		print_cmdt(t_sh *sh);
 

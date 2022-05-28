@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/27 20:01:03 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/28 17:02:54 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,17 +61,34 @@ int	main(int argc, char *argv[], char **envp)
 	msh = init_sh(envp);
 	// print_asciiart();
 
-	// unset test
+	// _getenv test
+	// printf("%s : %s\n", "USER", _getenv("USER", msh->envt)->value);
+	// printf("%s : %s\n", "LANG", _getenv("LANG", msh->envt)->value);
+	// printf("%s : %s\n", "_", _getenv("_", msh->envt)->value);
+	// printf("%s : %s\n", "AAAA", (char *)_getenv("AAAA", msh->envt));
+
+	// exit test
 	t_env *env = msh->envt->head;
 	env->next->next = NULL;
 	while (1)
 	{
 		parsing(readline("Minishell % "), msh);
-		_env(msh->envt);
 		t_cmdline	*cmdl = msh->cmdt->head;
-		_unset(msh, cmdl);
-		_env(msh->envt);
+		ft_exit(msh, cmdl);
+		printf("%d\n", msh->sh_error);
 	}
+
+	// unset test
+	// t_env *env = msh->envt->head;
+	// env->next->next = NULL;
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	ft_env(msh->envt);
+	// 	t_cmdline	*cmdl = msh->cmdt->head;
+	// 	ft_unset(msh, cmdl);
+	// 	ft_env(msh->envt);
+	// }
 
 	// export test
 	// t_env *env = msh->envt->head;
@@ -80,8 +97,17 @@ int	main(int argc, char *argv[], char **envp)
 	// {
 	// 	parsing(readline("Minishell % "), msh);
 	// 	t_cmdline	*cmdl = msh->cmdt->head;
-	// 	_export(msh, cmdl);
-	// 	_env(msh->envt);
+	// 	ft_export(msh, cmdl);
+	// 	ft_env(msh->envt);
+	// }
+
+	// cd test
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	t_cmdline	*cmdl = msh->cmdt->head;
+	// 	ft_cd(msh, cmdl);
+	// 	ft_pwd();
 	// }
 
 	// tokenize test
@@ -94,9 +120,9 @@ int	main(int argc, char *argv[], char **envp)
 	// }
 
 	// env,pwd test
-	// _env(msh->envt);
+	// ft_env(msh->envt);
 	// printf("-----------\n");
-	// _pwd();
+	// ft_pwd();
 
 	// replace_env test
 	// char *test1 = replace_env("abcdefg hijklmn opqrstu ", msh);
@@ -552,201 +578,20 @@ void	print_cmdt(t_sh *sh)
 	}
 }
 
-//builtins
-int	_echo(t_cmdline *cmdl)
-{
-	t_token	*token;
-	int		opt;
-
-	token = cmdl->tokens->head;
-	opt = FALSE;
-	token = token->next;
-	while (isopt_echo(token->token))
-	{
-		opt = TRUE;
-		token = token->next;
-	}
-	while (token)
-	{
-		if (token->type == ARG)
-		{
-			printf("%s", token->token);
-			if (token->next)
-				printf(" ");
-		}
-		token = token->next;
-	}
-	if (!opt)
-		printf("\n");
-	return (0);
-}
-
-int	isopt_echo(char *token)
-{
-	int	i;
-
-	i = 0;
-	if (token[i] != '-')
-		return (FALSE);
-	i += 1;
-	if (!token[i])
-		return (FALSE);
-	while (token[i])
-	{
-		if (token[i] != 'n')
-			return (FALSE);
-		i += 1;
-	}
-	return (TRUE);
-}
-
-int	_env(t_table *envt)
+t_env	*_getenv(char *key, t_table *envt)
 {
 	t_env	*env;
 
 	env = envt->head;
-	while (env)
+	if (!env)
+		return (env);
+	while (env->next)
 	{
-		printf("%s", env->key);
-		printf("=");
-		printf("%s\n", env->value);
+		if (!ft_strncmp(key, env->key, -1))
+			break ;
 		env = env->next;
 	}
-	return (0);
-}
-
-int	_export(t_sh *sh, t_cmdline *cmdl)
-{
-	t_token	*token;
-
-	token = cmdl->tokens->head;
-	if (!token->next)
-		return (_env(sh->envt));
-	while (token)
-	{
-		if (token->next)
-			token = token->next;
-		else
-			break ;
-		if (!ft_strchr(token->token, '=') && isvalid_key(token->token))
-			;
-		else if (!ft_strchr(token->token, '=') && !isvalid_key(token->token))
-		{
-			printf("export: `%s': not a valid identifier\n", token->token);
-			sh->sh_error = 1;
-			continue ;
-		}
-		else if (ft_strchr(token->token, '='))
-		{
-			char	*key;
-			char	*value;
-			t_env	*env;
-
-			key = ft_substr(token->token, 0, ft_strchr(token->token, '=') - token->token);
-			if (!isvalid_key(key))
-			{
-				printf("export: `%s': not a valid identifier\n", token->token);
-				sh->sh_error = 1;
-				free(key);
-				continue ;
-			}
-			value = ft_strdup(ft_strchr(token->token, '=') + 1);
-			if (!sh->envt->head)
-			{
-				sh->envt->head = init_env(key, value);
-				continue ;
-			}
-			env = sh->envt->head;
-			while (env->next)
-			{
-				if (!ft_strncmp(env->key, key, -1))
-					break ;
-				env = env->next;
-			}
-			if (!ft_strncmp(env->key, key, -1))
-			{
-				free((void *)env->value);
-				env->value = value;
-			}
-			else
-				env->next = init_env(key, value);
-		}
-	}
-	return (sh->sh_error);
-}
-
-int	_unset(t_sh *sh, t_cmdline *cmdl)
-{
-	t_token	*token;
-
-	token = cmdl->tokens->head;
-	while (token)
-	{
-		if (token->next)
-			token = token->next;
-		else
-			break ;
-		if (!isvalid_key(token->token))
-		{
-			printf("export: `%s': not a valid identifier\n", token->token);
-			sh->sh_error = 1;
-			continue ;
-		}
-		else
-		{
-			t_env	*env;
-			t_env	*prev;
-
-			env = sh->envt->head;
-			prev = env;
-			while (env->next)
-			{
-				if (!ft_strncmp(env->key, token->token, -1))
-					break ;
-				if (prev->next == env)
-					prev = prev->next;
-				env = env->next;
-			}
-			if (!ft_strncmp(env->key, token->token, -1))
-			{
-				if (prev == sh->envt->head)
-					sh->envt->head = env->next;
-				else
-					prev->next = env->next;
-				free((void *)env->key);
-				free((void *)env->value);
-				free(env);
-			}
-		}
-	}
-	return (sh->sh_error);
-}
-
-int	isvalid_key(char *key)
-{
-	int	i;
-
-	i = 0;
-	if (!ft_isalpha(key[i]) && key[i] != '_')
-		return (FALSE);
-	i += 1;
-	while (key[i])
-	{
-		if (!ft_isalnum(key[i]) && key[i] != '_')
-			return (FALSE);
-		i += 1;
-	}
-	return (TRUE);
-}
-
-int	_pwd()
-{
-	char	*buf;
-
-	buf = getcwd(NULL, 0);
-	if (!buf)
-		return (-1);
-	printf("%s\n", buf);
-	free(buf);
-	return (0);
+	if (ft_strncmp(key, env->key, -1))
+		env = env->next;
+	return (env);
 }
