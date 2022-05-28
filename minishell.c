@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/28 17:02:54 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/28 17:24:29 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,15 +68,16 @@ int	main(int argc, char *argv[], char **envp)
 	// printf("%s : %s\n", "AAAA", (char *)_getenv("AAAA", msh->envt));
 
 	// exit test
-	t_env *env = msh->envt->head;
-	env->next->next = NULL;
-	while (1)
-	{
-		parsing(readline("Minishell % "), msh);
-		t_cmdline	*cmdl = msh->cmdt->head;
-		ft_exit(msh, cmdl);
-		printf("%d\n", msh->sh_error);
-	}
+	// t_env *env = msh->envt->head;
+	// env->next->next = NULL;
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	t_cmdline	*cmdl = msh->cmdt->head;
+	// 	ft_exit(msh, cmdl);
+	// 	printf("%d\n", msh->sh_error);
+	// 	break;
+	// }
 
 	// unset test
 	// t_env *env = msh->envt->head;
@@ -135,7 +136,8 @@ int	main(int argc, char *argv[], char **envp)
 	// printf("test4 = %s\n", test4);
 	// char *test5 = replace_env("$ \"$\" $ ", msh);
 	// printf("test5 = %s\n", test5);
-	// char *test6 = replace_env("$USER\"abc\"", msh);
+	// msh->sh_error = 127;
+	// char *test6 = replace_env("$???", msh);
 	// printf("test6 = %s\n", test6);
 
 	// buffer test
@@ -431,7 +433,16 @@ char	*replace_env(char *cmdl, t_sh *sh)
 	while (cmdl[i])
 	{
 		toggle_flag_quote(cmdl[i], &flag_quote);
-		if (cmdl[i] == '$' && iskey(cmdl[i + 1]) && !(flag_quote & SINGLE_Q))
+		if (cmdl[i] == '$' && cmdl[i + 1] == '?' && !(flag_quote & SINGLE_Q))
+		{
+			char	*sh_error;
+
+			sh_error = ft_itoa(sh->sh_error);
+			buf_append_str(buf, sh_error);
+			free(sh_error);
+			i += 2;
+		}
+		else if (cmdl[i] == '$' && iskey(cmdl[i + 1]) && !(flag_quote & SINGLE_Q))
 		{
 			char	*key;
 			int		key_len = 0;
