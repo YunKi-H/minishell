@@ -6,7 +6,7 @@
 #    By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/13 11:39:56 by yuhwang           #+#    #+#              #
-#    Updated: 2022/05/23 15:57:43 by yuhwang          ###   ########.fr        #
+#    Updated: 2022/05/28 14:44:38 by yuhwang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,13 @@ RM			=	rm -f
 
 SRCS		=	minishell.c	\
 				buffer.c	\
+				cd.c		\
+				echo.c		\
+				env.c		\
+				exit.c		\
+				export.c	\
+				pwd.c		\
+				unset.c		\
 
 OBJS		=	$(SRCS:.c=.o)
 

@@ -6,11 +6,51 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/27 10:01:03 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/28 17:02:54 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+// static void print_asciiart()
+// {
+// 	printf("\
+//              .. ..      ..  ...         ........  ..\n\
+//             .      ....   ..-::~        ........  ..\n\
+//           ..                .~~:              ..  ..\n\
+//          ..          .  .    .~:        ............\n\
+//      ....        .           .          ............\n\
+//     ~!;,         .       ....  .           ..     ..\n\
+//     ;:~.           ...  .......,           ..     ..\n\
+//     :;:. ...............,,,... ..            ....   \n\
+//      ,,...............,,,,,,.. .-           ......  \n\
+//       ,.,,,,,,,,,,,,,,,,,-,..   .          ..    .. \n\
+//       ,.,,,,,,,,,,,,,,,-#@,...   .          ......  \n\
+//       ,.,,,,,,,,,,,,,,-:@@,..    .           ....   \n\
+//       ,.,,,:;-,,,,,,,,;@@#...    .           .  .   \n\
+//       ,..,,$#@!,-,,,,,-@@,...     ,     ............\n\
+//       .....~@@@;,,............    .     ............\n\
+//       .....,*@@:,..     ............    \n\
+//       ......,,,...,*$=. .-~~-.....,,    .......  ..\n\
+//      ............$$=$$$$::;;~-..,,--    .......  ..\n\
+//      -.....,,,.,;:~*=$#$::!*:-,,----    ..       ..\n\
+//      -...,,-~~--!#$=$##:;*$!:~---~~,    .......  ....\n\
+//      -,,,-~:;::::$####:;*$=;~--~~~:     .......  ....\n\
+//      .,-,-~:;!!;;::*!:;!#=;:~~~~::;     ..       ..\n\
+//       ~--~~::;;#$!;:;;;:=:::~~:::;.     .......  ..\n\
+//       ~~~~~::::;!$$::~-!:::::::;;-      .......  ..\n\
+//       .:~~~:::::::;!::;::::;;;;!-                  \n\
+//        ~:::::::::::::~:::;;;!!*         ...........\n\
+//         ~;::::::;;;;;;;;;;!!*-          ...........\n\
+//          .*!;;;;;;;;;;;;!!**!;  ,,,.             ..\n\
+//             :***!*!!!!!!**!!;;~~~~~--.           ..\n\
+//                  ;******!;;;::~-::::~-           ..\n\
+//                 :;;;;!;;;:::::~-,::::~  \n\
+//                -~::::::::~~~~~~-,-:::~. \n\
+//               .~~~::::~~~~-~~:~-,,:::~, \n\
+//               ~:~~~~~~~~----~::-,.,~~~, \n\
+//              -~;~-----------~:;-,. ~~~  ...@yuhwang @yotak\n");
+// }
 
 int	main(int argc, char *argv[], char **envp)
 {
@@ -19,15 +59,70 @@ int	main(int argc, char *argv[], char **envp)
 
 	t_sh	*msh;
 	msh = init_sh(envp);
+	// print_asciiart();
 
-	// tokenize test
+	// _getenv test
+	// printf("%s : %s\n", "USER", _getenv("USER", msh->envt)->value);
+	// printf("%s : %s\n", "LANG", _getenv("LANG", msh->envt)->value);
+	// printf("%s : %s\n", "_", _getenv("_", msh->envt)->value);
+	// printf("%s : %s\n", "AAAA", (char *)_getenv("AAAA", msh->envt));
+
+	// exit test
+	t_env *env = msh->envt->head;
+	env->next->next = NULL;
 	while (1)
 	{
 		parsing(readline("Minishell % "), msh);
-		// parsing(ft_strdup("echo            \"he\"l'l'\"o\" '|' \"cat\" -e"), msh);
-		print_cmdt(msh);
-		break ;
+		t_cmdline	*cmdl = msh->cmdt->head;
+		ft_exit(msh, cmdl);
+		printf("%d\n", msh->sh_error);
 	}
+
+	// unset test
+	// t_env *env = msh->envt->head;
+	// env->next->next = NULL;
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	ft_env(msh->envt);
+	// 	t_cmdline	*cmdl = msh->cmdt->head;
+	// 	ft_unset(msh, cmdl);
+	// 	ft_env(msh->envt);
+	// }
+
+	// export test
+	// t_env *env = msh->envt->head;
+	// env->next = NULL;
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	t_cmdline	*cmdl = msh->cmdt->head;
+	// 	ft_export(msh, cmdl);
+	// 	ft_env(msh->envt);
+	// }
+
+	// cd test
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	t_cmdline	*cmdl = msh->cmdt->head;
+	// 	ft_cd(msh, cmdl);
+	// 	ft_pwd();
+	// }
+
+	// tokenize test
+	// while (1)
+	// {
+	// 	parsing(readline("Minishell % "), msh);
+	// 	// parsing(ft_strdup("echo            \"he\"l'l'\"o\" '|' \"cat\" -e"), msh);
+	// 	print_cmdt(msh);
+	// 	break ;
+	// }
+
+	// env,pwd test
+	// ft_env(msh->envt);
+	// printf("-----------\n");
+	// ft_pwd();
 
 	// replace_env test
 	// char *test1 = replace_env("abcdefg hijklmn opqrstu ", msh);
@@ -263,7 +358,19 @@ t_table *tokenize(char *line)
 			while (isifs(line[i]))
 				i += 1;
 			if (!line[i])
-				break ;
+				break;
+		}
+		else if (isredirect(line, i) && !flag_quote)
+		{
+			if (buf->len)
+				token_add_back(tokens, ft_strdup(buf->buffer));
+			buf->len = 0;
+			token_add_back(tokens, ft_substr(line, i, isredirect(line, i)));
+			i += isredirect(line, i);
+			while (isifs(line[i]))
+				i += 1;
+			if (!line[i])
+				break;
 		}
 		else
 		{
@@ -310,7 +417,7 @@ void	parsing(char *line, t_sh *sh)
 	buf_destroy(buf);
 	free(line);
 }
-
+// TODO : $?
 char	*replace_env(char *cmdl, t_sh *sh)
 {
 	t_buf	*buf;
@@ -365,9 +472,20 @@ int	isifs(char c)
 	return (c == ' ' || c == '\t' || c == '\n');
 }
 
-int	isredirect(char c)
+int	isredirect(char *line, int i)
 {
-	return (c == '>' || c == '<');
+	int	result;
+
+	result = 0;
+	if (line[i] == '<' || line[i] == '>')
+	{
+		result += 1;
+		if (line[i + 1] && line[i] == line[i + 1])
+			result += 1;
+	}
+	else
+		result = 0;
+	return (result);
 }
 
 void	toggle_flag_quote(char c, int *flag)
@@ -458,4 +576,22 @@ void	print_cmdt(t_sh *sh)
 		i += 1;
 		cmdl = cmdl->next;
 	}
+}
+
+t_env	*_getenv(char *key, t_table *envt)
+{
+	t_env	*env;
+
+	env = envt->head;
+	if (!env)
+		return (env);
+	while (env->next)
+	{
+		if (!ft_strncmp(key, env->key, -1))
+			break ;
+		env = env->next;
+	}
+	if (ft_strncmp(key, env->key, -1))
+		env = env->next;
+	return (env);
 }
