@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/28 17:24:29 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/05/30 19:13:25 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,15 @@ int	main(int argc, char *argv[], char **envp)
 	(void)argc;
 	(void)argv;
 
+	// print_asciiart();
 	t_sh	*msh;
 	msh = init_sh(envp);
-	// print_asciiart();
+	while (1)
+	{
+		if (parsing(readline("msh % "), msh))
+			continue ; // new prompt
+		print_cmdt(msh);
+	}
 
 	// _getenv test
 	// printf("%s : %s\n", "USER", _getenv("USER", msh->envt)->value);
@@ -315,14 +321,14 @@ void	cmdl_add_back(t_table *cmdt, t_cmdline *cmdl)
 	cmdt->size += 1;
 }
 
-void	token_add_back(t_table *tokens, char *token)
+void	token_add_back(t_table *tokens, char *token, int type)
 {
 	t_token *tmp;
 	t_token *cur;
 
 	tmp = (t_token *)malloc(sizeof(t_token));
 	tmp->token = token;
-	tmp->type = 0;
+	tmp->type = type;
 	tmp->next = NULL;
 	cur = tokens->head;
 	if (!cur)
@@ -336,57 +342,8 @@ void	token_add_back(t_table *tokens, char *token)
 	tokens->size += 1;
 }
 
-t_table *tokenize(char *line)
-{
-	t_table	*tokens;
-	t_buf	*buf;
-	int		flag_quote;
-	int		i;
-
-	tokens = init_table();
-	buf = buf_new();
-	flag_quote = FALSE;
-	i = 0;
-	while (isifs(line[i]))
-		i += 1;
-	while (TRUE)
-	{
-		toggle_flag_quote(line[i], &flag_quote);
-		if ((isifs(line[i]) || !line[i]) && !flag_quote)
-		{
-			char *token = ft_strdup(buf->buffer);
-			token_add_back(tokens, token);
-			buf->len = 0;
-			while (isifs(line[i]))
-				i += 1;
-			if (!line[i])
-				break;
-		}
-		else if (isredirect(line, i) && !flag_quote)
-		{
-			if (buf->len)
-				token_add_back(tokens, ft_strdup(buf->buffer));
-			buf->len = 0;
-			token_add_back(tokens, ft_substr(line, i, isredirect(line, i)));
-			i += isredirect(line, i);
-			while (isifs(line[i]))
-				i += 1;
-			if (!line[i])
-				break;
-		}
-		else
-		{
-			buf_append(buf, line[i]);
-			i += 1;
-		}
-	}
-	buf_destroy(buf);
-	free(line);
-	return (tokens);
-}
-
 // parse
-void	parsing(char *line, t_sh *sh)
+int	parsing(char *line, t_sh *sh)
 {
 	t_buf	*buf;
 	int	flag_quote;
@@ -404,7 +361,8 @@ void	parsing(char *line, t_sh *sh)
 		{
 			char	*cmdl = ft_strdup(buf->buffer);
 			buf->len = 0;
-			cmdl_add_back(sh->cmdt, init_cmdl(tokenize(replace_env(cmdl, sh))));
+			buf->buffer[0] = '\0';
+			cmdl_add_back(sh->cmdt, init_cmdl(remove_quote(tokenize(replace_env(cmdl, sh)))));
 			free(cmdl);
 		}
 		else
@@ -415,11 +373,16 @@ void	parsing(char *line, t_sh *sh)
 	}
 	// (파이프 || flag on) 문장이 끝날 경우  예외처리
 	if (line[i - 1] == '|' || flag_quote)
-		printf("%s\n", strerror(2));
+	{
+		printf("%s\n", strerror(127));
+		sh->sh_error = 258;
+		return (sh->sh_error);
+	}
 	buf_destroy(buf);
 	free(line);
+	return (0);
 }
-// TODO : $?
+
 char	*replace_env(char *cmdl, t_sh *sh)
 {
 	t_buf	*buf;
@@ -471,6 +434,113 @@ char	*replace_env(char *cmdl, t_sh *sh)
 	replaced = ft_strdup(buf->buffer);
 	buf_destroy(buf);
 	return (replaced);
+}
+
+t_table *tokenize(char *line)
+{
+	t_table	*tokens;
+	t_buf	*buf;
+	int		flag_quote;
+	int		i;
+
+	tokens = init_table();
+	buf = buf_new();
+	flag_quote = FALSE;
+	i = 0;
+	while (isifs(line[i]))
+		i += 1;
+	while (TRUE)
+	{
+		toggle_flag_quote(line[i], &flag_quote);
+		if ((isifs(line[i]) || !line[i]) && !flag_quote)
+		{
+			char *token = ft_strdup(buf->buffer);
+			token_add_back(tokens, token, ARG);
+			buf->len = 0;
+			buf->buffer[0] = '\0';
+			while (isifs(line[i]))
+				i += 1;
+			if (!line[i])
+				break;
+		}
+		else if (isredirect(line, i) && !flag_quote)
+		{
+			if (buf->len)
+				token_add_back(tokens, ft_strdup(buf->buffer), ARG);
+			buf->len = 0;
+			buf->buffer[0] = '\0';
+			token_add_back(tokens, ft_substr(line, i, isredirect(line, i)), REDIRECT);
+			i += isredirect(line, i);
+			while (isifs(line[i]))
+				i += 1;
+			if (!line[i])
+				break;
+		}
+		else
+		{
+			buf_append(buf, line[i]);
+			i += 1;
+		}
+	}
+	buf_destroy(buf);
+	free(line);
+	return (tokens);
+}
+
+t_table	*remove_quote(t_table *tokens)
+{
+	t_token	*token;
+	t_buf	*buf;
+	int		flag_quote;
+
+	token = tokens->head;
+	token->type = CMD;
+	buf = buf_new();
+	flag_quote = FALSE;
+	while (token->next)
+	{
+		if (token->type == REDIRECT)
+			token->next->type = FILENAME;
+		// func1
+		int	i;
+		i = 0;
+		while (token->token[i])
+		{
+			if (token->token[i] == '\'' && (!(flag_quote & DOUBLE_Q) || flag_quote & SINGLE_Q))
+				flag_quote ^= SINGLE_Q;
+			else if (token->token[i] == '\"' && (!(flag_quote & SINGLE_Q) || flag_quote & DOUBLE_Q))
+				flag_quote ^= DOUBLE_Q;
+			else
+				buf_append(buf, token->token[i]);
+			i += 1;
+		}
+		free(token->token);
+		token->token = ft_strdup(buf->buffer);
+		buf->len = 0;
+		buf->buffer[0] = '\0';
+		token = token->next;
+	}
+	// func1
+	int	i;
+	i = 0;
+	while (token->token[i])
+	{
+		if (token->token[i] == '\'' && (!(flag_quote & DOUBLE_Q) || flag_quote & SINGLE_Q))
+			flag_quote ^= SINGLE_Q;
+		else if (token->token[i] == '\"' && (!(flag_quote & SINGLE_Q) || flag_quote & DOUBLE_Q))
+			flag_quote ^= DOUBLE_Q;
+		else
+			buf_append(buf, token->token[i]);
+		i += 1;
+	}
+	free(token->token);
+	token->token = ft_strdup(buf->buffer);
+	buf->len = 0;
+	buf->buffer[0] = '\0';
+	if (token->type == REDIRECT)
+		; // syntax error
+	buf_destroy(buf);
+	return (tokens);
 }
 
 int	iskey(char c)
@@ -525,6 +595,7 @@ char	**envttoevnp(t_table *envt)
 		buf_append_str(buf, (char *)tmp->value);
 		result[i] = ft_strdup(buf->buffer);
 		buf->len = 0;
+		buf->buffer[0] = '\0';
 		i += 1;
 		tmp = tmp->next;
 	}
@@ -565,30 +636,6 @@ void	free_args(char **args)
 	free(args);
 }
 
-void	print_cmdt(t_sh *sh)
-{
-	t_cmdline *cmdl;
-	int i = 0;
-	cmdl = sh->cmdt->head;
-	while (cmdl)
-	{
-		t_token	*token;
-		int j = 0;
-		printf("----cmdl[%d]----\n", i);
-		token = cmdl->tokens->head;
-		while (token)
-		{
-			printf("token[%d] : [%s] ", j, token->token);
-			token = token->next;
-			j += 1;
-			printf("\n");
-		}
-		printf("----cmdl[%d]----\n", i);
-		i += 1;
-		cmdl = cmdl->next;
-	}
-}
-
 t_env	*_getenv(char *key, t_table *envt)
 {
 	t_env	*env;
@@ -605,4 +652,28 @@ t_env	*_getenv(char *key, t_table *envt)
 	if (ft_strncmp(key, env->key, -1))
 		env = env->next;
 	return (env);
+}
+
+void	print_cmdt(t_sh *sh)
+{
+	t_cmdline *cmdl;
+	int i = 0;
+	cmdl = sh->cmdt->head;
+	while (cmdl)
+	{
+		t_token	*token;
+		int j = 0;
+		printf("----cmdl[%d]----\n", i);
+		token = cmdl->tokens->head;
+		while (token)
+		{
+			printf("token[%d] : [%s] (%d)", j, token->token, token->type);
+			token = token->next;
+			j += 1;
+			printf("\n");
+		}
+		printf("----cmdl[%d]----\n", i);
+		i += 1;
+		cmdl = cmdl->next;
+	}
 }
