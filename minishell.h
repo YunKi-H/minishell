@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/30 17:16:58 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/03 14:01:51 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,8 @@ int			parsing(char *readline, t_sh *sh);
 char		*replace_env(char *cmdline, t_sh *sh);
 t_table		*tokenize(char *line);
 t_table		*remove_quote(t_table *tokens);
+// execute
+char		*get_path(t_cmdline *cmdl, t_sh *sh);
 // bool
 int			isifs(char c);
 int			iskey(char c);
@@ -131,6 +133,7 @@ int			isredirect(char *line, int i);
 int			isopt_echo(char *token);
 int			isvalid_key(char *key);
 int			isnum(char *token);
+int			isbuiltin(t_cmdline *cmdl);
 // utils
 void		toggle_flag_quote(char c, int *flag);
 t_env		*_getenv(char *key, t_table *envt);

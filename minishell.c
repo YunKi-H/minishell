@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/30 19:13:25 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/03 14:15:13 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,11 +60,19 @@ int	main(int argc, char *argv[], char **envp)
 	// print_asciiart();
 	t_sh	*msh;
 	msh = init_sh(envp);
+	// while (1)
+	// {
+	// 	if (parsing(readline("msh % "), msh))
+	// 		continue ; // new prompt
+
+	// 	// print_cmdt(msh);
+	// }
+
+	// get_path test
 	while (1)
 	{
-		if (parsing(readline("msh % "), msh))
-			continue ; // new prompt
-		print_cmdt(msh);
+		parsing(readline("msh % "), msh);
+		printf("%s\n", get_path(msh->cmdt->head, msh));
 	}
 
 	// _getenv test
@@ -349,6 +357,8 @@ int	parsing(char *line, t_sh *sh)
 	int	flag_quote;
 	int	i;
 
+	if (line)
+		add_history(line);
 	free_cmdt(sh->cmdt);
 	sh->cmdt = init_table();
 	buf = buf_new();
@@ -653,6 +663,138 @@ t_env	*_getenv(char *key, t_table *envt)
 		env = env->next;
 	return (env);
 }
+
+// int	runcmd(t_sh *sh)
+// {
+// 	t_table		*cmdt;
+// 	t_cmdline	*cmdl;
+
+// 	cmdt = sh->cmdt;
+// 	cmdl = cmdt->head;
+// 	while (cmdl)
+// 	{
+// 		// if (isbuiltin(cmdl))
+// 		// 	실행하는 함수
+// 		// else
+// 		// 	execve();
+// 	}
+// }
+
+char	*get_path(t_cmdline *cmdl, t_sh *sh)
+{
+	t_token			*token = cmdl->tokens->head;
+	t_env			*path = _getenv("PATH", sh->envt);
+	char			**paths = ft_split(path->value, ':');
+	DIR				*dirp = opendir(".");
+	struct dirent	*file = NULL;
+	int				i = 0;
+	t_buf			*buf = buf_new();
+	char			*p;
+
+	while (TRUE)
+	{
+		// printf("2\n");
+		file = readdir(dirp);
+		if (!file)
+			break ;
+		if (!ft_strncmp(token->token, file->d_name, -1))
+		{
+			buf_append(buf, '.');
+			buf_append(buf, '/');
+			buf_append_str(buf, file->d_name);
+			p = ft_strdup(buf->buffer);
+			buf_destroy(buf);
+			int	j = 0;
+			while (paths[j])
+			{
+				free(paths[j]);
+				j += 1;
+			}
+			free(paths);
+			return (p);
+		}
+	}
+	closedir(dirp);
+	while (paths[i])
+	{
+		// printf("3\n");
+		dirp = opendir(paths[i]);
+		if (!dirp)
+		{
+			i += 1;
+			continue ;
+		}
+		while (TRUE)
+		{
+			file = readdir(dirp);
+			if (!file)
+				break ;
+			// printf ("4 : %s\n", file->d_name);
+			if (!ft_strncmp(token->token, file->d_name, -1))
+			{
+				buf_append_str(buf, paths[i]);
+				buf_append(buf, '/');
+				buf_append_str(buf, file->d_name);
+				p = ft_strdup(buf->buffer);
+				buf_destroy(buf);
+				int	j = 0;
+				while (paths[j])
+				{
+					free(paths[j]);
+					j += 1;
+				}
+				free(paths);
+				return (p);
+			}
+		}
+		closedir(dirp);
+		i += 1;
+	}
+	return (NULL);
+}
+
+int	isbuiltin(t_cmdline *cmdl)
+{
+	t_token *cmd;
+
+	cmd = cmdl->tokens->head;
+	if (ft_strncmp(cmd->token, "cd", -1))
+		return (TRUE);
+	if (ft_strncmp(cmd->token, "echo", -1))
+		return (TRUE);
+	if (ft_strncmp(cmd->token, "env", -1))
+		return (TRUE);
+	if (ft_strncmp(cmd->token, "exit", -1))
+		return (TRUE);
+	if (ft_strncmp(cmd->token, "export", -1))
+		return (TRUE);
+	if (ft_strncmp(cmd->token, "pwd", -1))
+		return (TRUE);
+	if (ft_strncmp(cmd->token, "unset", -1))
+		return (TRUE);
+	return (FALSE);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void	print_cmdt(t_sh *sh)
 {
