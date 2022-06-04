@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/03 14:15:13 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/04 13:25:15 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,10 @@ int	main(int argc, char *argv[], char **envp)
 	while (1)
 	{
 		parsing(readline("msh % "), msh);
-		printf("%s\n", get_path(msh->cmdt->head, msh));
+		char *path = get_path(msh->cmdt->head, msh);
+		printf("%s\n", path);
+		free(path);
+		system("leaks minishell");
 	}
 
 	// _getenv test
@@ -710,6 +713,7 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 				free(paths[j]);
 				j += 1;
 			}
+			closedir(dirp);
 			free(paths);
 			return (p);
 		}
@@ -743,6 +747,7 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 					free(paths[j]);
 					j += 1;
 				}
+				closedir(dirp);
 				free(paths);
 				return (p);
 			}
@@ -750,6 +755,14 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 		closedir(dirp);
 		i += 1;
 	}
+	buf_destroy(buf);
+	int	j = 0;
+	while (paths[j])
+	{
+		free(paths[j]);
+		j += 1;
+	}
+	free(paths);
 	return (NULL);
 }
 
