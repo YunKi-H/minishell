@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/03 14:01:51 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/04 16:33:41 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,9 @@ int			isredirect(char *line, int i);
 int			isopt_echo(char *token);
 int			isvalid_key(char *key);
 int			isnum(char *token);
+int			isemptyline(char *line);
 int			isbuiltin(t_cmdline *cmdl);
+int			run_builtin(t_sh *sh, t_cmdline *cmdl);
 // utils
 void		toggle_flag_quote(char c, int *flag);
 t_env		*_getenv(char *key, t_table *envt);
