@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/04 17:20:22 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/05 14:11:01 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,25 @@ int	main(int argc, char *argv[], char **envp)
 	{
 		if (parsing(readline("msh % "), msh))
 			continue ; // new prompt
+
 		if (isbuiltin(msh->cmdt->head))
-			run_builtin(msh, msh->cmdt->head);
+			msh->sh_error = run_builtin(msh, msh->cmdt->head);
 		else
-			printf("isnot builtin\n");
+		{
+			t_cmdline	*cmdl = msh->cmdt->head;
+			int			pid;
+
+			pid = fork();
+			if (!pid)
+			{
+				if (execve(get_path(cmdl, msh), cmdltocmdp(cmdl->tokens), envttoevnp(msh->envt)) < 0)
+				{
+					msh->sh_error = errno;
+					printf("%s\n", strerror(errno));
+				}
+			}
+			waitpid(-1, &msh->sh_error, 0);
+		}
 	}
 
 	// get_path test
