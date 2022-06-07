@@ -6,77 +6,72 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/04 13:25:15 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/07 20:12:58 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// static void print_asciiart()
-// {
-// 	printf("\
-//              .. ..      ..  ...         ........  ..\n\
-//             .      ....   ..-::~        ........  ..\n\
-//           ..                .~~:              ..  ..\n\
-//          ..          .  .    .~:        ............\n\
-//      ....        .           .          ............\n\
-//     ~!;,         .       ....  .           ..     ..\n\
-//     ;:~.           ...  .......,           ..     ..\n\
-//     :;:. ...............,,,... ..            ....   \n\
-//      ,,...............,,,,,,.. .-           ......  \n\
-//       ,.,,,,,,,,,,,,,,,,,-,..   .          ..    .. \n\
-//       ,.,,,,,,,,,,,,,,,-#@,...   .          ......  \n\
-//       ,.,,,,,,,,,,,,,,-:@@,..    .           ....   \n\
-//       ,.,,,:;-,,,,,,,,;@@#...    .           .  .   \n\
-//       ,..,,$#@!,-,,,,,-@@,...     ,     ............\n\
-//       .....~@@@;,,............    .     ............\n\
-//       .....,*@@:,..     ............    \n\
-//       ......,,,...,*$=. .-~~-.....,,    .......  ..\n\
-//      ............$$=$$$$::;;~-..,,--    .......  ..\n\
-//      -.....,,,.,;:~*=$#$::!*:-,,----    ..       ..\n\
-//      -...,,-~~--!#$=$##:;*$!:~---~~,    .......  ....\n\
-//      -,,,-~:;::::$####:;*$=;~--~~~:     .......  ....\n\
-//      .,-,-~:;!!;;::*!:;!#=;:~~~~::;     ..       ..\n\
-//       ~--~~::;;#$!;:;;;:=:::~~:::;.     .......  ..\n\
-//       ~~~~~::::;!$$::~-!:::::::;;-      .......  ..\n\
-//       .:~~~:::::::;!::;::::;;;;!-                  \n\
-//        ~:::::::::::::~:::;;;!!*         ...........\n\
-//         ~;::::::;;;;;;;;;;!!*-          ...........\n\
-//          .*!;;;;;;;;;;;;!!**!;  ,,,.             ..\n\
-//             :***!*!!!!!!**!!;;~~~~~--.           ..\n\
-//                  ;******!;;;::~-::::~-           ..\n\
-//                 :;;;;!;;;:::::~-,::::~  \n\
-//                -~::::::::~~~~~~-,-:::~. \n\
-//               .~~~::::~~~~-~~:~-,,:::~, \n\
-//               ~:~~~~~~~~----~::-,.,~~~, \n\
-//              -~;~-----------~:;-,. ~~~  ...@yuhwang @yotak\n");
-// }
+void	handler(int sig)
+{
+	if (sig == SIGQUIT)
+	{
+		rl_on_new_line();
+		rl_redisplay();
+	}
+	else if (sig == SIGINT)
+	{
+		printf("\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+}
 
 int	main(int argc, char *argv[], char **envp)
 {
 	(void)argc;
 	(void)argv;
 
-	// print_asciiart();
 	t_sh	*msh;
 	msh = init_sh(envp);
-	// while (1)
-	// {
-	// 	if (parsing(readline("msh % "), msh))
-	// 		continue ; // new prompt
-
-	// 	// print_cmdt(msh);
-	// }
-
-	// get_path test
+	signal(SIGINT, &handler);
+	signal(SIGQUIT, &handler);
 	while (1)
 	{
-		parsing(readline("msh % "), msh);
-		char *path = get_path(msh->cmdt->head, msh);
-		printf("%s\n", path);
-		free(path);
-		system("leaks minishell");
+		if (parsing(ft_readline("msh % "), msh))
+			continue ; // new prompt
+		ft_export(msh, msh->cmdt->head);
+		ft_env(msh->envt);
+		// if (isbuiltin(msh->cmdt->head))
+		// 	msh->sh_error = run_builtin(msh, msh->cmdt->head);
+		// else
+		// {
+		// 	t_cmdline	*cmdl = msh->cmdt->head;
+		// 	int			pid;
+
+		// 	pid = fork();
+		// 	if (!pid)
+		// 	{
+		// 		if (execve(get_path(cmdl, msh), cmdltocmdp(cmdl->tokens), envttoevnp(msh->envt)) < 0)
+		// 		{
+		// 			msh->sh_error = errno;
+		// 			printf("%s\n", strerror(errno));
+		// 		}
+		// 	}
+		// 	waitpid(-1, &msh->sh_error, 0);
+		// }
 	}
+
+	// get_path test
+	// while (1)
+	// {
+	// 	parsing(readline("msh % "), msh);
+	// 	char *path = get_path(msh->cmdt->head, msh);
+	// 	printf("%s\n", path);
+	// 	free(path);
+	// 	system("leaks minishell");
+	// }
 
 	// _getenv test
 	// printf("%s : %s\n", "USER", _getenv("USER", msh->envt)->value);
@@ -360,7 +355,12 @@ int	parsing(char *line, t_sh *sh)
 	int	flag_quote;
 	int	i;
 
-	if (line)
+	if (!line)
+	{
+		printf("\e[A%sexit\n", "msh % ");
+		exit(0);
+	}
+	if (!isemptyline(line))
 		add_history(line);
 	free_cmdt(sh->cmdt);
 	sh->cmdt = init_table();
@@ -385,9 +385,10 @@ int	parsing(char *line, t_sh *sh)
 		i += 1;
 	}
 	// (파이프 || flag on) 문장이 끝날 경우  예외처리
-	if (line[i - 1] == '|' || flag_quote)
+	// 0 < i -> if (i == 0)
+	if (0 < i && (line[i - 1] == '|' || flag_quote))
 	{
-		printf("%s\n", strerror(127));
+		printf("syntax error near unexpected token\n");
 		sh->sh_error = 258;
 		return (sh->sh_error);
 	}
@@ -507,14 +508,12 @@ t_table	*remove_quote(t_table *tokens)
 	int		flag_quote;
 
 	token = tokens->head;
-	token->type = CMD;
 	buf = buf_new();
 	flag_quote = FALSE;
 	while (token->next)
 	{
 		if (token->type == REDIRECT)
 			token->next->type = FILENAME;
-		// func1
 		int	i;
 		i = 0;
 		while (token->token[i])
@@ -533,7 +532,6 @@ t_table	*remove_quote(t_table *tokens)
 		buf->buffer[0] = '\0';
 		token = token->next;
 	}
-	// func1
 	int	i;
 	i = 0;
 	while (token->token[i])
@@ -552,6 +550,11 @@ t_table	*remove_quote(t_table *tokens)
 	buf->buffer[0] = '\0';
 	if (token->type == REDIRECT)
 		; // syntax error
+	token = tokens->head;
+	while (token && token->type)
+		token = token->next;
+	if (token)
+		token->type = CMD;
 	buf_destroy(buf);
 	return (tokens);
 }
@@ -582,6 +585,20 @@ int	isredirect(char *line, int i)
 	return (result);
 }
 
+int	isemptyline(char *line)
+{
+	int	i;
+
+	i = 0;
+	while (line[i])
+	{
+		if (!isifs(line[i]))
+			return (FALSE);
+		i += 1;
+	}
+	return (TRUE);
+}
+
 void	toggle_flag_quote(char c, int *flag)
 {
 	if (c == '\'' && !(*flag & DOUBLE_Q))
@@ -599,7 +616,7 @@ char	**envttoevnp(t_table *envt)
 
 	buf = buf_new();
 	tmp = envt->head;
-	result = (char **)malloc(sizeof(char *) * (envt->size + 1));
+	result = (char **)ft_calloc(envt->size + 1, sizeof(char *));
 	i = 0;
 	while (tmp)
 	{
@@ -612,7 +629,6 @@ char	**envttoevnp(t_table *envt)
 		i += 1;
 		tmp = tmp->next;
 	}
-	result[i] = NULL;
 	buf_destroy(buf);
 	return (result);
 }
@@ -624,15 +640,17 @@ char	**cmdltocmdp(t_table *tokens)
 	int			i;
 
 	tmp = tokens->head;
-	result = (char **)malloc(sizeof(char *) * (tokens->size + 1));
+	result = (char **)ft_calloc(tokens->size + 1, sizeof(char *));
 	i = 0;
 	while (tmp)
 	{
-		result[i] = ft_strdup(tmp->token);
-		i += 1;
+		if (tmp->type <= CMD)
+		{
+			result[i] = ft_strdup(tmp->token);
+			i += 1;
+		}
 		tmp = tmp->next;
 	}
-	result[i] = NULL;
 	return (result);
 }
 
@@ -666,22 +684,6 @@ t_env	*_getenv(char *key, t_table *envt)
 		env = env->next;
 	return (env);
 }
-
-// int	runcmd(t_sh *sh)
-// {
-// 	t_table		*cmdt;
-// 	t_cmdline	*cmdl;
-
-// 	cmdt = sh->cmdt;
-// 	cmdl = cmdt->head;
-// 	while (cmdl)
-// 	{
-// 		// if (isbuiltin(cmdl))
-// 		// 	실행하는 함수
-// 		// else
-// 		// 	execve();
-// 	}
-// }
 
 char	*get_path(t_cmdline *cmdl, t_sh *sh)
 {
@@ -771,28 +773,71 @@ int	isbuiltin(t_cmdline *cmdl)
 	t_token *cmd;
 
 	cmd = cmdl->tokens->head;
-	if (ft_strncmp(cmd->token, "cd", -1))
+	while (cmd && cmd->type != CMD)
+		cmd = cmd->next;
+	if (!cmd)
+		return (FALSE);
+	if (!ft_strncmp(cmd->token, "cd", -1))
 		return (TRUE);
-	if (ft_strncmp(cmd->token, "echo", -1))
+	if (!ft_strncmp(cmd->token, "echo", -1))
 		return (TRUE);
-	if (ft_strncmp(cmd->token, "env", -1))
+	if (!ft_strncmp(cmd->token, "env", -1))
 		return (TRUE);
-	if (ft_strncmp(cmd->token, "exit", -1))
+	if (!ft_strncmp(cmd->token, "exit", -1))
 		return (TRUE);
-	if (ft_strncmp(cmd->token, "export", -1))
+	if (!ft_strncmp(cmd->token, "export", -1))
 		return (TRUE);
-	if (ft_strncmp(cmd->token, "pwd", -1))
+	if (!ft_strncmp(cmd->token, "pwd", -1))
 		return (TRUE);
-	if (ft_strncmp(cmd->token, "unset", -1))
+	if (!ft_strncmp(cmd->token, "unset", -1))
 		return (TRUE);
 	return (FALSE);
 }
 
+int	run_builtin(t_sh *sh, t_cmdline *cmdl)
+{
+	t_token *cmd;
 
+	cmd = cmdl->tokens->head;
+	while (cmd && cmd->type != CMD)
+		cmd = cmd->next;
+	if (!ft_strncmp(cmd->token, "cd", -1))
+		return (ft_cd(sh, cmdl));
+	if (!ft_strncmp(cmd->token, "echo", -1))
+		return (ft_echo(cmdl));
+	if (!ft_strncmp(cmd->token, "env", -1))
+		return (ft_env(sh->envt));
+	if (!ft_strncmp(cmd->token, "exit", -1))
+		return (ft_exit(sh, cmdl));
+	if (!ft_strncmp(cmd->token, "export", -1))
+		return (ft_export(sh, cmdl));
+	if (!ft_strncmp(cmd->token, "pwd", -1))
+		return (ft_pwd());
+	if (!ft_strncmp(cmd->token, "unset", -1))
+		return (ft_unset(sh, cmdl));
+	return (-1);
+}
 
+int	run_cmd(t_sh *sh)
+{
+	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
+		return (run_builtin(sh, sh->cmdt->head));
+	return (0);
+}
 
+char	*ft_readline(const char *prompt)
+{
+	char			*line;
+	struct termios	term;
 
-
+	tcgetattr(STDIN_FILENO, &term);
+	term.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	line = readline(prompt);
+	term.c_lflag |= ECHOCTL;
+	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	return (line);
+}
 
 
 

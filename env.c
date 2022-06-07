@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:46:14 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/28 17:02:28 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/07 16:58:55 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,12 @@ int	ft_env(t_table *envt)
 	env = envt->head;
 	while (env)
 	{
-		printf("%s", env->key);
-		printf("=");
-		printf("%s\n", env->value);
+		if (env->value)
+		{
+			printf("%s", env->key);
+			printf("=");
+			printf("%s\n", env->value);
+		}
 		env = env->next;
 	}
 	return (0);
