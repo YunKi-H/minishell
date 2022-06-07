@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:46:45 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/28 17:03:09 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/07 16:28:20 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,18 @@ int	ft_export(t_sh *sh, t_cmdline *cmdl)
 
 	token = cmdl->tokens->head;
 	if (!token->next)
-		return (ft_env(sh->envt));
+	{
+		t_env	*env = sh->envt->head;
+
+		while (env)
+		{
+			printf("declare -x %s", env->key);
+			if (env->value)
+				printf("=%s",env->value);
+			printf("\n");
+			env = env->next;
+		}
+	}
 	while (token)
 	{
 		if (token->next)
@@ -26,7 +37,18 @@ int	ft_export(t_sh *sh, t_cmdline *cmdl)
 		else
 			break ;
 		if (!ft_strchr(token->token, '=') && isvalid_key(token->token))
-			;
+		{
+			t_env	*env;
+
+			env = _getenv(token->token, sh->envt);
+			if (!env)
+			{
+				env = sh->envt->head;
+				while (env->next)
+					env = env->next;
+				env->next = init_env(ft_strdup(token->token), NULL);
+			}
+		}
 		else if (!ft_strchr(token->token, '=') && !isvalid_key(token->token))
 		{
 			printf("export: `%s': not a valid identifier\n", token->token);
