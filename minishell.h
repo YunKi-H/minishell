@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/07 16:59:23 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/08 12:54:13 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,8 @@ struct s_table
 struct s_cmdline
 {
 	t_table				*tokens;
+	int					input;
+	int					output;
 	struct s_cmdline	*next;
 };
 
@@ -137,6 +139,7 @@ int			isemptyline(char *line);
 int			isbuiltin(t_cmdline *cmdl);
 int			run_builtin(t_sh *sh, t_cmdline *cmdl);
 // utils
+void		handler(int sig);
 void		toggle_flag_quote(char c, int *flag);
 t_env		*_getenv(char *key, t_table *envt);
 char		*ft_readline(const char *prompt);
