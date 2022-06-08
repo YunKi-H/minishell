@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/07 20:12:58 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/08 16:49:04 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,26 +41,25 @@ int	main(int argc, char *argv[], char **envp)
 	{
 		if (parsing(ft_readline("msh % "), msh))
 			continue ; // new prompt
-		ft_export(msh, msh->cmdt->head);
-		ft_env(msh->envt);
-		// if (isbuiltin(msh->cmdt->head))
-		// 	msh->sh_error = run_builtin(msh, msh->cmdt->head);
-		// else
-		// {
-		// 	t_cmdline	*cmdl = msh->cmdt->head;
-		// 	int			pid;
 
-		// 	pid = fork();
-		// 	if (!pid)
-		// 	{
-		// 		if (execve(get_path(cmdl, msh), cmdltocmdp(cmdl->tokens), envttoevnp(msh->envt)) < 0)
-		// 		{
-		// 			msh->sh_error = errno;
-		// 			printf("%s\n", strerror(errno));
-		// 		}
-		// 	}
-		// 	waitpid(-1, &msh->sh_error, 0);
-		// }
+		if (isbuiltin(msh->cmdt->head))
+			msh->sh_error = run_builtin(msh, msh->cmdt->head);
+		else
+		{
+			t_cmdline	*cmdl = msh->cmdt->head;
+			int			pid;
+
+			pid = fork();
+			if (!pid)
+			{
+				if (execve(get_path(cmdl, msh), cmdltocmdp(cmdl->tokens), envttoevnp(msh->envt)) < 0)
+				{
+					msh->sh_error = errno;
+					printf("%s\n", strerror(errno));
+				}
+			}
+			waitpid(-1, &msh->sh_error, 0);
+		}
 	}
 
 	// get_path test
@@ -222,6 +221,8 @@ t_cmdline	*init_cmdl(t_table *tokens)
 	if (!cmdl)
 		return (NULL);
 	cmdl->tokens = tokens;
+	cmdl->input = STDIN_FILENO;
+	cmdl->output = STDOUT_FILENO;
 	cmdl->next = NULL;
 	return (cmdl);
 }
@@ -512,7 +513,7 @@ t_table	*remove_quote(t_table *tokens)
 	flag_quote = FALSE;
 	while (token->next)
 	{
-		if (token->type == REDIRECT)
+		if (token->type == REDIRECT && token->next && !token->next->type)
 			token->next->type = FILENAME;
 		int	i;
 		i = 0;
@@ -698,7 +699,6 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 
 	while (TRUE)
 	{
-		// printf("2\n");
 		file = readdir(dirp);
 		if (!file)
 			break ;
@@ -723,7 +723,6 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 	closedir(dirp);
 	while (paths[i])
 	{
-		// printf("3\n");
 		dirp = opendir(paths[i]);
 		if (!dirp)
 		{
@@ -735,7 +734,6 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 			file = readdir(dirp);
 			if (!file)
 				break ;
-			// printf ("4 : %s\n", file->d_name);
 			if (!ft_strncmp(token->token, file->d_name, -1))
 			{
 				buf_append_str(buf, paths[i]);
@@ -818,12 +816,12 @@ int	run_builtin(t_sh *sh, t_cmdline *cmdl)
 	return (-1);
 }
 
-int	run_cmd(t_sh *sh)
-{
-	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
-		return (run_builtin(sh, sh->cmdt->head));
-	return (0);
-}
+// int	run_cmd(t_sh *sh)
+// {
+// 	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
+// 		return (run_builtin(sh, sh->cmdt->head));
+// 	return (0);
+// }
 
 char	*ft_readline(const char *prompt)
 {
@@ -839,6 +837,27 @@ char	*ft_readline(const char *prompt)
 	return (line);
 }
 
+int	redirection_set(t_cmdline *cmdl)
+{
+	t_token	*token;
+
+	token = cmdl->tokens->head;
+	while (token)
+	{
+		if (token->type & REDIRECT)
+		{
+			if (!ft_strncmp(token->token, "<<", -1))
+				;
+			if (!ft_strncmp(token->token, "<", -1))
+				;
+			if (!ft_strncmp(token->token, ">", -1))
+				;
+			if (!ft_strncmp(token->token, ">>", -1))
+				;
+		}
+		token = token->next;
+	}
+}
 
 
 
