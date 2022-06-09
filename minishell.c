@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/08 16:49:04 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/09 12:07:34 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -847,13 +847,55 @@ int	redirection_set(t_cmdline *cmdl)
 		if (token->type & REDIRECT)
 		{
 			if (!ft_strncmp(token->token, "<<", -1))
-				;
+			{
+				char	*delimeter;
+				char	*line;
+				int		fd[2];
+
+				if (cmdl->input > 1)
+					close(cmdl->input);
+				if (pipe(fd) < 0)
+					; // pipe err
+				cmdl->input = fd[1];
+				delimeter = token->next->token;
+				while (TRUE)
+				{
+					line = ft_readline("heredoc> ");
+					if (!ft_strncmp(delimeter, line, -1))
+					{
+						free(line);
+						break ;
+					}
+					write(fd[0], line, ft_strlen(line));
+					write(fd[0], "\n", 1);
+					free(line);
+				}
+				close(fd[0]);
+			}
 			if (!ft_strncmp(token->token, "<", -1))
-				;
+			{
+				if (cmdl->input > 1)
+					close(cmdl->input);
+				cmdl->input = open(token->next->token, O_RDONLY);
+				if (cmdl->input < 0)
+					; // file open err (no such file or directory)
+			}
 			if (!ft_strncmp(token->token, ">", -1))
-				;
+			{
+				if (cmdl->input > 1)
+					close(cmdl->input);
+				cmdl->input = open(token->next->token, O_RDWR | O_TRUNC | O_CREAT, 00666);
+				if (cmdl->input < 0)
+					; // file open err (no such file or directory)
+			}
 			if (!ft_strncmp(token->token, ">>", -1))
-				;
+			{
+				if (cmdl->input > 1)
+					close(cmdl->input);
+				cmdl->input = open(token->next->token, O_RDWR | O_CREAT | O_APPEND, 00666);
+				if (cmdl->input < 0)
+					; // file open err (no such file or directory)
+			}
 		}
 		token = token->next;
 	}
