@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/09 12:07:34 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/09 13:37:50 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,21 @@ void	handler(int sig)
 		rl_on_new_line();
 		rl_redisplay();
 	}
-	else if (sig == SIGINT)
+	if (sig == SIGINT)
 	{
 		printf("\n");
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
+}
+
+void	handler_heredoc(int sig)
+{
+	if (sig == SIGINT)
+		exit(1);
+	if (sig == SIGQUIT)
+		return ;
 }
 
 int	main(int argc, char *argv[], char **envp)
@@ -837,7 +845,7 @@ char	*ft_readline(const char *prompt)
 	return (line);
 }
 
-int	redirection_set(t_cmdline *cmdl)
+int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 {
 	t_token	*token;
 
@@ -851,6 +859,7 @@ int	redirection_set(t_cmdline *cmdl)
 				char	*delimeter;
 				char	*line;
 				int		fd[2];
+				int		pid;
 
 				if (cmdl->input > 1)
 					close(cmdl->input);
@@ -858,19 +867,28 @@ int	redirection_set(t_cmdline *cmdl)
 					; // pipe err
 				cmdl->input = fd[1];
 				delimeter = token->next->token;
-				while (TRUE)
+				pid = fork();
+				if (pid == 0)
 				{
-					line = ft_readline("heredoc> ");
-					if (!ft_strncmp(delimeter, line, -1))
+					signal(SIGINT, &handler_heredoc);
+					signal(SIGQUIT, &handler_heredoc);
+					while (TRUE)
 					{
+						line = ft_readline("heredoc> ");
+						if (!ft_strncmp(delimeter, line, -1))
+						{
+							free(line);
+							break ;
+						}
+						write(fd[0], line, ft_strlen(line));
+						write(fd[0], "\n", 1);
 						free(line);
-						break ;
 					}
-					write(fd[0], line, ft_strlen(line));
-					write(fd[0], "\n", 1);
-					free(line);
+					close(fd[0]);
+					exit(0);
 				}
-				close(fd[0]);
+				else
+					waitpid(pid, &sh->sh_error, WNOHANG);
 			}
 			if (!ft_strncmp(token->token, "<", -1))
 			{
