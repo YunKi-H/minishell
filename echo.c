@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:45:37 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/28 17:02:32 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/09 17:40:31 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	ft_echo(t_cmdline *cmdl)
 	token = cmdl->tokens->head;
 	opt = FALSE;
 	token = token->next;
-	while (isopt_echo(token->token))
+	while (token && isopt_echo(token->token))
 	{
 		opt = TRUE;
 		token = token->next;
