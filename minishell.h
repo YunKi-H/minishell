@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/08 12:54:13 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/10 17:14:36 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,6 +128,8 @@ t_table		*tokenize(char *line);
 t_table		*remove_quote(t_table *tokens);
 // execute
 char		*get_path(t_cmdline *cmdl, t_sh *sh);
+void		excutor(t_sh *sh,t_cmdline *cmdl);
+int			run_cmd(t_sh *sh);
 // bool
 int			isifs(char c);
 int			iskey(char c);

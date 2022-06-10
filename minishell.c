@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/09 18:32:40 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/10 17:14:28 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,25 +49,8 @@ int	main(int argc, char *argv[], char **envp)
 	{
 		if (parsing(ft_readline("msh % "), msh))
 			continue ; // new prompt
-
-		if (isbuiltin(msh->cmdt->head))
-			msh->sh_error = run_builtin(msh, msh->cmdt->head);
-		else
-		{
-			t_cmdline	*cmdl = msh->cmdt->head;
-			int			pid;
-
-			pid = fork();
-			if (!pid)
-			{
-				if (execve(get_path(cmdl, msh), cmdltocmdp(cmdl->tokens), envttoevnp(msh->envt)) < 0)
-				{
-					msh->sh_error = errno;
-					printf("%s\n", strerror(errno));
-				}
-			}
-			waitpid(-1, &msh->sh_error, 0);
-		}
+		// todo : check_syn_err(msh);
+		run_cmd(msh);
 	}
 
 	// get_path test
@@ -705,6 +688,8 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 	t_buf			*buf = buf_new();
 	char			*p;
 
+	while (token && token->type != CMD)
+		token = token->next;
 	while (TRUE)
 	{
 		file = readdir(dirp);
@@ -824,13 +809,6 @@ int	run_builtin(t_sh *sh, t_cmdline *cmdl)
 	return (-1);
 }
 
-// int	run_cmd(t_sh *sh)
-// {
-// 	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
-// 		return (run_builtin(sh, sh->cmdt->head));
-// 	return (0);
-// }
-
 char	*ft_readline(const char *prompt)
 {
 	char			*line;
@@ -865,7 +843,7 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 					close(cmdl->input);
 				if (pipe(fd) < 0)
 					; // pipe err
-				cmdl->input = fd[1];
+				cmdl->input = fd[0];
 				delimeter = token->next->token;
 				pid = fork();
 				if (pid == 0)
@@ -880,11 +858,12 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 							free(line);
 							break ;
 						}
-						write(fd[0], line, ft_strlen(line));
-						write(fd[0], "\n", 1);
+						write(fd[1], line, ft_strlen(line));
+						write(fd[1], "\n", 1);
 						free(line);
 					}
-					close(fd[0]);
+					write(fd[1], "\0", 1);
+					close(fd[1]);
 					exit(0);
 				}
 				else
@@ -918,6 +897,54 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 		token = token->next;
 	}
 	return (0);
+}
+
+void	excutor(t_sh *sh,t_cmdline *cmdl)
+{
+	execve(get_path(cmdl, sh), cmdltocmdp(cmdl->tokens), envttoevnp(sh->envt));
+}
+
+int	run_cmd(t_sh *sh)
+{
+	t_cmdline	*cmdl;
+
+	cmdl = sh->cmdt->head;
+	while (cmdl)
+	{
+		redirection_set(sh, cmdl);
+		cmdl = cmdl->next;
+	}
+	cmdl = sh->cmdt->head;
+	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
+		sh->sh_error = run_builtin(sh, sh->cmdt->head);
+	else
+	{
+		int	pid;
+		int	fd[2];
+
+		pipe(fd);
+		close(fd[0]);
+		dup2(1, fd[0]);
+		close(fd[1]);
+		dup2(0, fd[1]);
+		while (cmdl)
+		{
+			pid = fork();
+			if (!pid) // child
+			{
+				dup2(cmdl->input, 0);
+				dup2(cmdl->output, 1);
+				if (isbuiltin(cmdl))
+					exit(run_builtin(sh, cmdl));
+				else
+					excutor(sh, cmdl);
+			}
+			else // parent
+				waitpid(pid, &sh->sh_error, 0);
+			cmdl = cmdl->next;
+		}
+	}
+	return (sh->sh_error);
 }
 
 
