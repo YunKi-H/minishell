@@ -6,13 +6,13 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:48:40 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/28 17:02:06 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/09 19:26:54 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	update_pwd(t_sh *sh, char *path)
+static void	update_pwd(t_sh *sh)
 {
 	t_env	*oldpwd;
 	t_env	*pwd;
@@ -27,7 +27,7 @@ static void	update_pwd(t_sh *sh, char *path)
 			oldpwd->value = ft_strdup(pwd->value);
 		}
 		free((void *)pwd->value);
-		pwd->value = ft_strdup(path);
+		pwd->value = getcwd(NULL, 0);
 	}
 	else
 	{
@@ -65,7 +65,7 @@ int	ft_cd(t_sh *sh, t_cmdline *cmdl)
 			sh->sh_error = 1;
 		}
 		else
-			update_pwd(sh, tmp->token);
+			update_pwd(sh);
 	}
 	return (sh->sh_error);
 }
