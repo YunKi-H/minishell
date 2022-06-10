@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/10 17:14:28 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/10 17:30:37 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -862,12 +862,14 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 						write(fd[1], "\n", 1);
 						free(line);
 					}
-					write(fd[1], "\0", 1);
 					close(fd[1]);
 					exit(0);
 				}
 				else
+				{
 					waitpid(pid, &sh->sh_error, 0);
+					close(fd[1]);
+				}
 			}
 			if (!ft_strncmp(token->token, "<", -1))
 			{
@@ -899,9 +901,9 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 	return (0);
 }
 
-void	excutor(t_sh *sh,t_cmdline *cmdl)
+int	excutor(t_sh *sh,t_cmdline *cmdl)
 {
-	execve(get_path(cmdl, sh), cmdltocmdp(cmdl->tokens), envttoevnp(sh->envt));
+	return (execve(get_path(cmdl, sh), cmdltocmdp(cmdl->tokens), envttoevnp(sh->envt)));
 }
 
 int	run_cmd(t_sh *sh)
@@ -937,10 +939,19 @@ int	run_cmd(t_sh *sh)
 				if (isbuiltin(cmdl))
 					exit(run_builtin(sh, cmdl));
 				else
-					excutor(sh, cmdl);
+				{
+					if (excutor(sh, cmdl))
+						exit(127);
+				}
 			}
 			else // parent
+			{
+				if (cmdl->input > 0)
+					close(cmdl->input);
+				if (cmdl->output > 1)
+					close(cmdl->output);
 				waitpid(pid, &sh->sh_error, 0);
+			}
 			cmdl = cmdl->next;
 		}
 	}
