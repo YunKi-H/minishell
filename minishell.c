@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/11 17:24:08 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/11 18:10:35 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -927,14 +927,35 @@ int	run_cmd(t_sh *sh)
 		int	pipe_old[2];
 		int	pipe_new[2];
 
+		pipe(pipe_old);
+		close(pipe_old[0]);
+		close(pipe_old[1]);
+		dup2(0, pipe_old[0]);
 		i = 0;
 		pid = (int *)ft_calloc(sh->cmdt->size, sizeof(int));
-		while (i < sh->cmdt->size - 1)
+		while (i < sh->cmdt->size)
 		{
+			pipe(pipe_new);
 			pid[i] = fork();
-			if (!pid) // child
+			if (!pid[i]) // child
 			{
-
+				close(pipe_old[1]);
+				dup2(pipe_old[0], 0);
+				close(pipe_old[0]);
+				close(pipe_new[0]);
+				if (i == sh->cmdt->size - 1)
+					dup2(pipe_new[1], 1);
+				close(pipe_new[1]);
+				if (cmdl->input > 0)
+				{
+					dup2(cmdl->input, 0);
+					close(cmdl->input);
+				}
+				if (cmdl->output > 1)
+				{
+					dup2(cmdl->output, 1);
+					close(cmdl->output);
+				}
 				// run cmd
 				if (isbuiltin(cmdl))
 					exit(run_builtin(sh, cmdl));
@@ -946,10 +967,12 @@ int	run_cmd(t_sh *sh)
 			}
 			else // parent
 			{
-				// if (cmdl->input > 0)
-				// 	close(cmdl->input);
-				// if (cmdl->output > 1)
-				// 	close(cmdl->output);
+				close(pipe_old[0]);
+				pipe_old[0] = pipe_new[0];
+				pipe_old[1] = pipe_new[1];
+				close(pipe_old[1]);
+				if (i == sh->cmdt->size - 1)
+					close(pipe_old[0]);
 			}
 			cmdl = cmdl->next;
 			i += 1;
