@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/10 17:30:37 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/11 17:24:08 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	handler(int sig)
 void	handler_heredoc(int sig)
 {
 	if (sig == SIGINT)
-		exit(1);
+		exit(130);
 	if (sig == SIGQUIT)
 		return ;
 }
@@ -47,7 +47,7 @@ int	main(int argc, char *argv[], char **envp)
 	signal(SIGQUIT, &handler);
 	while (1)
 	{
-		if (parsing(ft_readline("msh % "), msh))
+		if (parsing(ft_readline("\rmsh % "), msh))
 			continue ; // new prompt
 		// todo : check_syn_err(msh);
 		run_cmd(msh);
@@ -850,6 +850,7 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 				{
 					signal(SIGINT, &handler_heredoc);
 					signal(SIGQUIT, &handler_heredoc);
+					close(fd[0]);
 					while (TRUE)
 					{
 						line = ft_readline("> ");
@@ -921,21 +922,20 @@ int	run_cmd(t_sh *sh)
 		sh->sh_error = run_builtin(sh, sh->cmdt->head);
 	else
 	{
-		int	pid;
-		int	fd[2];
+		int	*pid;
+		int	i;
+		int	pipe_old[2];
+		int	pipe_new[2];
 
-		pipe(fd);
-		close(fd[0]);
-		dup2(1, fd[0]);
-		close(fd[1]);
-		dup2(0, fd[1]);
-		while (cmdl)
+		i = 0;
+		pid = (int *)ft_calloc(sh->cmdt->size, sizeof(int));
+		while (i < sh->cmdt->size - 1)
 		{
-			pid = fork();
+			pid[i] = fork();
 			if (!pid) // child
 			{
-				dup2(cmdl->input, 0);
-				dup2(cmdl->output, 1);
+
+				// run cmd
 				if (isbuiltin(cmdl))
 					exit(run_builtin(sh, cmdl));
 				else
@@ -946,14 +946,18 @@ int	run_cmd(t_sh *sh)
 			}
 			else // parent
 			{
-				if (cmdl->input > 0)
-					close(cmdl->input);
-				if (cmdl->output > 1)
-					close(cmdl->output);
-				waitpid(pid, &sh->sh_error, 0);
+				// if (cmdl->input > 0)
+				// 	close(cmdl->input);
+				// if (cmdl->output > 1)
+				// 	close(cmdl->output);
 			}
 			cmdl = cmdl->next;
+			i += 1;
 		}
+		i = 0;
+		while (i < sh->cmdt->size)
+			waitpid(pid[i], &sh->sh_error, 0);
+		free(pid);
 	}
 	return (sh->sh_error);
 }
