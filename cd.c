@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:48:40 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/09 19:26:54 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 14:09:18 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,11 @@ static void	update_pwd(t_sh *sh)
 
 int	ft_cd(t_sh *sh, t_cmdline *cmdl)
 {
-	t_token	*tmp;
-	t_env	*env;
+	const t_token	*tmp = cmdl->tokens->head;
+	const t_env		*env = _getenv("HOME", sh->envt);
 
 	if (cmdl->tokens->size == 1)
 	{
-		env = _getenv("HOME", sh->envt);
 		if (!env)
 		{
 			printf("cd: HOME not set\n");
@@ -57,11 +56,9 @@ int	ft_cd(t_sh *sh, t_cmdline *cmdl)
 	}
 	else
 	{
-		tmp = cmdl->tokens->head;
-		tmp = tmp->next;
-		if (chdir(tmp->token) == -1)
+		if (chdir(tmp->next->token) == -1)
 		{
-			printf("cd: %s: No such file or directory\n", tmp->token);
+			printf("cd: %s: No such file or directory\n", tmp->next->token);
 			sh->sh_error = 1;
 		}
 		else

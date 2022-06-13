@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:27:25 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 14:26:59 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ t_table		*tokenize(char *line);
 t_table		*remove_quote(t_table *tokens);
 // execute
 char		*get_path(t_cmdline *cmdl, t_sh *sh);
-int			excutor(t_sh *sh,t_cmdline *cmdl);
+int			excutor(t_sh *sh, t_cmdline *cmdl);
 int			run_builtin(t_sh *sh, t_cmdline *cmdl);
 int			run_cmd(t_sh *sh);
 // bool
@@ -146,19 +146,17 @@ void		handler_heredoc(int sig);
 void		toggle_flag_quote(char c, int *flag);
 t_env		*_getenv(char *key, t_table *envt);
 char		*ft_readline(const char *prompt);
+void		ft_err(int errnbr);
 // linked list -> char **
 char		**envttoevnp(t_table *envt);
 char		**cmdltocmdp(t_table *tokens);
 // builtins
 int			ft_echo(t_cmdline *cmdl);
 int			ft_env(t_table *envt);
-int			ft_pwd();
+int			ft_pwd(void);
 int			ft_export(t_sh *sh, t_cmdline *cmdl);
 int			ft_unset(t_sh *sh, t_cmdline *cmdl);
 int			ft_cd(t_sh *sh, t_cmdline *cmdl);
 int			ft_exit(t_sh *sh, t_cmdline *cmdl);
-
-// debug
-void		print_cmdt(t_sh *sh);
 
 #endif

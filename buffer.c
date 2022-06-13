@@ -6,15 +6,15 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 17:11:55 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/20 19:47:39 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 14:04:00 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "buffer.h"
 
-t_buf	*buf_new()
+t_buf	*buf_new(void)
 {
-	t_buf *buf;
+	t_buf	*buf;
 
 	buf = (t_buf *)malloc(sizeof(t_buf));
 	buf->size = BUFFER_SIZE;
@@ -26,7 +26,6 @@ t_buf	*buf_new()
 
 void	buf_append(t_buf *buf, char c)
 {
-
 	buf->buffer[buf->len] = c;
 	buf->len += 1;
 	buf->buffer[buf->len] = '\0';

@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:47:07 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/28 17:02:18 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 14:24:06 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,32 +30,35 @@ int	ft_unset(t_sh *sh, t_cmdline *cmdl)
 			continue ;
 		}
 		else
-		{
-			t_env	*env;
-			t_env	*prev;
-
-			env = sh->envt->head;
-			prev = env;
-			while (env->next)
-			{
-				if (!ft_strncmp(env->key, token->token, -1))
-					break ;
-				if (prev->next == env)
-					prev = prev->next;
-				env = env->next;
-			}
-			if (!ft_strncmp(env->key, token->token, -1))
-			{
-				if (prev == sh->envt->head)
-					sh->envt->head = env->next;
-				else
-					prev->next = env->next;
-				free((void *)env->key);
-				free((void *)env->value);
-				free(env);
-				sh->envt->size -= 1;
-			}
-		}
+			remove_env(sh, token);
 	}
 	return (sh->sh_error);
+}
+
+static void	remove_env(t_sh *sh, t_token *token)
+{
+	t_env	*env;
+	t_env	*prev;
+
+	env = sh->envt->head;
+	prev = env;
+	while (env->next)
+	{
+		if (!ft_strncmp(env->key, token->token, -1))
+			break ;
+		if (prev->next == env)
+			prev = prev->next;
+		env = env->next;
+	}
+	if (!ft_strncmp(env->key, token->token, -1))
+	{
+		if (prev == sh->envt->head)
+			sh->envt->head = env->next;
+		else
+			prev->next = env->next;
+		free((void *)env->key);
+		free((void *)env->value);
+		free(env);
+		sh->envt->size -= 1;
+	}
 }

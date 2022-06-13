@@ -1,5 +1,29 @@
 #include "minishell.h"
 
+void	print_cmdt(t_sh *sh)
+{
+	t_cmdline *cmdl;
+	int i = 0;
+	cmdl = sh->cmdt->head;
+	while (cmdl)
+	{
+		t_token	*token;
+		int j = 0;
+		printf("----cmdl[%d]----\n", i);
+		token = cmdl->tokens->head;
+		while (token)
+		{
+			printf("token[%d] : [%s] (%d)", j, token->token, token->type);
+			token = token->next;
+			j += 1;
+			printf("\n");
+		}
+		printf("----cmdl[%d]----\n", i);
+		i += 1;
+		cmdl = cmdl->next;
+	}
+}
+
 int	main(int argc, char *argv[], char **envp)
 {
 	(void)argc;
@@ -14,7 +38,8 @@ int	main(int argc, char *argv[], char **envp)
 		if (parsing(ft_readline("\rmsh % "), msh))
 			continue ; // new prompt
 		// todo : check_syn_err(msh);
-		run_cmd(msh);
+		printf("%s\n", get_path(msh->cmdt->head, msh));
+		// run_cmd(msh);
 	}
 
 	// get_path test
