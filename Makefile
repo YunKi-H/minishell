@@ -6,7 +6,7 @@
 #    By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/13 11:39:56 by yuhwang           #+#    #+#              #
-#    Updated: 2022/06/04 15:50:33 by yuhwang          ###   ########.fr        #
+#    Updated: 2022/06/13 13:36:48 by yuhwang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,15 +23,24 @@ READLINE	=	-lreadline
 LDFLAGS		=	-L/opt/homebrew/opt/readline/lib
 CPPFLAGS	=	-I/opt/homebrew/opt/readline/include
 
-SRCS		=	minishell.c	\
-				buffer.c	\
-				cd.c		\
-				echo.c		\
-				env.c		\
-				exit.c		\
-				export.c	\
-				pwd.c		\
-				unset.c		\
+SRCS		=	minishell.c		\
+				parse.c			\
+				buffer.c		\
+				bool.c			\
+				cd.c			\
+				echo.c			\
+				env.c			\
+				exit.c			\
+				export.c		\
+				pwd.c			\
+				unset.c			\
+				handler.c		\
+				init.c			\
+				free.c			\
+				ttop.c			\
+				node_add_back.c	\
+				get_arg.c		\
+				ft_readline.c	\
 
 OBJS		=	$(SRCS:.c=.o)
 
