@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:30:16 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:30:23 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 14:16:25 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,8 @@ void	cmdl_add_back(t_table *cmdt, t_cmdline *cmdl)
 
 void	token_add_back(t_table *tokens, char *token, int type)
 {
-	t_token *tmp;
-	t_token *cur;
+	t_token	*tmp;
+	t_token	*cur;
 
 	tmp = (t_token *)malloc(sizeof(t_token));
 	tmp->token = token;

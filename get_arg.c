@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:34:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:34:48 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 18:42:43 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,19 +30,29 @@ t_env	*_getenv(char *key, t_table *envt)
 	return (env);
 }
 
-char	*get_path(t_cmdline *cmdl, t_sh *sh)
+static char	*make_path(char *path, char *name)
 {
-	t_token			*token = cmdl->tokens->head;
-	t_env			*path = _getenv("PATH", sh->envt);
-	char			**paths = ft_split(path->value, ':');
-	DIR				*dirp = opendir(".");
-	struct dirent	*file = NULL;
-	int				i = 0;
-	t_buf			*buf = buf_new();
+	t_buf	*buf;
+	char	*path_with_file;
+
+	buf = buf_new();
+	buf_append_str(buf, path);
+	buf_append(buf, '/');
+	buf_append_str(buf, name);
+	path_with_file = ft_strdup(buf->buffer);
+	buf_destroy(buf);
+	return (path_with_file);
+}
+
+static char	*find_file(t_token *token, char **paths, int i)
+{
+	DIR				*dirp;
+	struct dirent	*file;
 	char			*p;
 
-	while (token && token->type != CMD)
-		token = token->next;
+	dirp = opendir(paths[i]);
+	if (!dirp)
+		return (NULL);
 	while (TRUE)
 	{
 		file = readdir(dirp);
@@ -50,64 +60,33 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 			break ;
 		if (!ft_strncmp(token->token, file->d_name, -1))
 		{
-			buf_append(buf, '.');
-			buf_append(buf, '/');
-			buf_append_str(buf, file->d_name);
-			p = ft_strdup(buf->buffer);
-			buf_destroy(buf);
-			int	j = 0;
-			while (paths[j])
-			{
-				free(paths[j]);
-				j += 1;
-			}
+			p = make_path(paths[i], file->d_name);
+			free_args(paths);
 			closedir(dirp);
-			free(paths);
 			return (p);
 		}
 	}
 	closedir(dirp);
-	while (paths[i])
-	{
-		dirp = opendir(paths[i]);
-		if (!dirp)
-		{
-			i += 1;
-			continue ;
-		}
-		while (TRUE)
-		{
-			file = readdir(dirp);
-			if (!file)
-				break ;
-			if (!ft_strncmp(token->token, file->d_name, -1))
-			{
-				buf_append_str(buf, paths[i]);
-				buf_append(buf, '/');
-				buf_append_str(buf, file->d_name);
-				p = ft_strdup(buf->buffer);
-				buf_destroy(buf);
-				int	j = 0;
-				while (paths[j])
-				{
-					free(paths[j]);
-					j += 1;
-				}
-				closedir(dirp);
-				free(paths);
-				return (p);
-			}
-		}
-		closedir(dirp);
-		i += 1;
-	}
-	buf_destroy(buf);
-	int	j = 0;
-	while (paths[j])
-	{
-		free(paths[j]);
-		j += 1;
-	}
-	free(paths);
 	return (NULL);
+}
+
+char	*get_path(t_cmdline *cmdl, t_sh *sh)
+{
+	char **const	paths = ft_split(_getenv("PATH", sh->envt)->value, ':');
+	t_token			*token;
+	char			*p;
+	int				i;
+
+	token = cmdl->tokens->head;
+	while (token && token->type != CMD)
+		token = token->next;
+	i = -1;
+	while (paths[++i])
+	{
+		p = find_file(token, paths, i);
+		if (p)
+			return (p);
+	}
+	free_args(paths);
+	return (token->token);
 }

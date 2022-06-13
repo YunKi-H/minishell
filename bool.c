@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:32:43 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:35:03 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 19:37:40 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int	isemptyline(char *line)
 
 int	isbuiltin(t_cmdline *cmdl)
 {
-	t_token *cmd;
+	t_token	*cmd;
 
 	cmd = cmdl->tokens->head;
 	while (cmd && cmd->type != CMD)

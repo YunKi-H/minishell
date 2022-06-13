@@ -6,11 +6,17 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:25:49 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:25:59 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 18:42:02 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	ft_signal(void (*handler)(int))
+{
+	signal(SIGINT, handler);
+	signal(SIGQUIT, handler);
+}
 
 void	handler(int sig)
 {

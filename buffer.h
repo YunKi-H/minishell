@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/20 17:11:53 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/05/20 19:47:27 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 14:26:31 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ struct s_buf
 	int		len;
 };
 
-t_buf	*buf_new();
+t_buf	*buf_new(void);
 void	buf_append(t_buf *buf, char c);
 void	buf_append_str(t_buf *buf, char *str);
 void	buf_expand(t_buf *buf);

@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:26:34 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:26:43 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 14:14:35 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ t_cmdline	*init_cmdl(t_table *tokens)
 
 t_table	*init_envt(char **envp)
 {
-	t_table	*envt;
+	t_table		*envt;
 	int			i;
 
 	envt = (t_table *)malloc(sizeof(t_table));

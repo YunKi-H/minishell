@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:58:53 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 18:46:20 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,12 @@
 
 int	main(int argc, char *argv[], char **envp)
 {
+	t_sh	*msh;
+
 	(void)argc;
 	(void)argv;
-
-	t_sh	*msh;
 	msh = init_sh(envp);
-	signal(SIGINT, &handler);
-	signal(SIGQUIT, &handler);
+	ft_signal(&handler);
 	while (1)
 	{
 		if (parsing(ft_readline("\rmsh % "), msh))
@@ -30,26 +29,8 @@ int	main(int argc, char *argv[], char **envp)
 	}
 }
 
-void	print_cmdt(t_sh *sh)
+void	ft_err(int errnbr)
 {
-	t_cmdline *cmdl;
-	int i = 0;
-	cmdl = sh->cmdt->head;
-	while (cmdl)
-	{
-		t_token	*token;
-		int j = 0;
-		printf("----cmdl[%d]----\n", i);
-		token = cmdl->tokens->head;
-		while (token)
-		{
-			printf("token[%d] : [%s] (%d)", j, token->token, token->type);
-			token = token->next;
-			j += 1;
-			printf("\n");
-		}
-		printf("----cmdl[%d]----\n", i);
-		i += 1;
-		cmdl = cmdl->next;
-	}
+	printf("%s\n", strerror(errnbr));
+	exit(errnbr);
 }
