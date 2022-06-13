@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/11 18:10:35 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 12:37:49 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -886,7 +886,7 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 					close(cmdl->output);
 				cmdl->output = open(token->next->token, O_RDWR | O_TRUNC | O_CREAT, 00666);
 				if (cmdl->output < 0)
-					; // file open err (no such file or directory)
+					printf("file open err\n"); // file open err (no such file or directory)
 			}
 			if (!ft_strncmp(token->token, ">>", -1))
 			{
@@ -919,7 +919,28 @@ int	run_cmd(t_sh *sh)
 	}
 	cmdl = sh->cmdt->head;
 	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
+	{
+		int	stdfd[2];
+
+		pipe(stdfd);
+		close(stdfd[0]);
+		close(stdfd[1]);
+		dup2(0, stdfd[0]);
+		dup2(1, stdfd[1]);
+		if (cmdl->input > 0)
+		{
+			dup2(cmdl->input, 0);
+			close(cmdl->input);
+		}
+		if (cmdl->output > 1)
+		{
+			dup2(cmdl->output, 1);
+			close(cmdl->output);
+		}
 		sh->sh_error = run_builtin(sh, sh->cmdt->head);
+		dup2(stdfd[0], 0);
+		dup2(stdfd[1], 1);
+	}
 	else
 	{
 		int	*pid;
@@ -929,7 +950,6 @@ int	run_cmd(t_sh *sh)
 
 		pipe(pipe_old);
 		close(pipe_old[0]);
-		close(pipe_old[1]);
 		dup2(0, pipe_old[0]);
 		i = 0;
 		pid = (int *)ft_calloc(sh->cmdt->size, sizeof(int));
@@ -939,12 +959,12 @@ int	run_cmd(t_sh *sh)
 			pid[i] = fork();
 			if (!pid[i]) // child
 			{
-				close(pipe_old[1]);
 				dup2(pipe_old[0], 0);
 				close(pipe_old[0]);
-				close(pipe_new[0]);
-				if (i == sh->cmdt->size - 1)
+				close(pipe_old[1]);
+				if (i != sh->cmdt->size - 1)
 					dup2(pipe_new[1], 1);
+				close(pipe_new[0]);
 				close(pipe_new[1]);
 				if (cmdl->input > 0)
 				{
@@ -968,18 +988,21 @@ int	run_cmd(t_sh *sh)
 			else // parent
 			{
 				close(pipe_old[0]);
+				close(pipe_old[1]);
 				pipe_old[0] = pipe_new[0];
 				pipe_old[1] = pipe_new[1];
-				close(pipe_old[1]);
 				if (i == sh->cmdt->size - 1)
+				{
 					close(pipe_old[0]);
+					close(pipe_old[1]);
+				}
 			}
 			cmdl = cmdl->next;
 			i += 1;
 		}
 		i = 0;
 		while (i < sh->cmdt->size)
-			waitpid(pid[i], &sh->sh_error, 0);
+			waitpid(pid[i++], &sh->sh_error, 0);
 		free(pid);
 	}
 	return (sh->sh_error);
