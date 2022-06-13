@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:35:26 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:35:33 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 19:53:41 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,5 +23,12 @@ char	*ft_readline(const char *prompt)
 	line = readline(prompt);
 	term.c_lflag |= ECHOCTL;
 	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	if (!line)
+	{
+		printf("\e[A%sexit\n", prompt);
+		exit(0);
+	}
+	if (!isemptyline(line))
+		add_history(line);
 	return (line);
 }

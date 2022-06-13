@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 14:16:00 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 18:46:20 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ int	main(int argc, char *argv[], char **envp)
 	(void)argc;
 	(void)argv;
 	msh = init_sh(envp);
-	signal(SIGINT, &handler);
-	signal(SIGQUIT, &handler);
+	ft_signal(&handler);
 	while (1)
 	{
 		if (parsing(ft_readline("\rmsh % "), msh))

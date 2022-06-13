@@ -6,7 +6,7 @@
 #    By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/13 11:39:56 by yuhwang           #+#    #+#              #
-#    Updated: 2022/06/13 16:27:05 by yuhwang          ###   ########.fr        #
+#    Updated: 2022/06/13 19:59:15 by yuhwang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ CPPFLAGS	=	-I/opt/homebrew/opt/readline/include
 
 SRCS		=	minishell.c		\
 				parse.c			\
+				execute.c		\
 				buffer.c		\
 				bool.c			\
 				cd.c			\
@@ -41,6 +42,11 @@ SRCS		=	minishell.c		\
 				node_add_back.c	\
 				get_arg.c		\
 				ft_readline.c	\
+				redirection.c	\
+				pipe.c			\
+				tokenize.c		\
+				replace_env.c	\
+				remove_quote.c	\
 
 OBJS		=	$(SRCS:.c=.o)
 

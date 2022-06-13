@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 14:26:59 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/13 18:44:18 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,7 @@ int			isbuiltin(t_cmdline *cmdl);
 // utils
 void		handler(int sig);
 void		handler_heredoc(int sig);
+void		ft_signal(void (*handler)(int));
 void		toggle_flag_quote(char c, int *flag);
 t_env		*_getenv(char *key, t_table *envt);
 char		*ft_readline(const char *prompt);
@@ -158,5 +159,16 @@ int			ft_export(t_sh *sh, t_cmdline *cmdl);
 int			ft_unset(t_sh *sh, t_cmdline *cmdl);
 int			ft_cd(t_sh *sh, t_cmdline *cmdl);
 int			ft_exit(t_sh *sh, t_cmdline *cmdl);
+// redirection
+int			redirection_set(t_sh *sh, t_cmdline *cmdl);
+void		redir_input(t_cmdline *cmdl, t_token *token);
+void		redir_output(t_cmdline *cmdl, t_token *token);
+void		redir_append(t_cmdline *cmdl, t_token *token);
+void		redir_heredoc(t_sh *sh, t_cmdline *cmdl, char *delimeter);
+// pipe
+void		ft_pipe(int *fd);
+void		init_pipe(int *p_old);
+void		set_child_pipe(t_cmdline *cmdl, int *old, int *new, int isend);
+void		set_parent_pipe(int *old, int *new, int isend);
 
 #endif
