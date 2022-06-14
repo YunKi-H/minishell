@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 19:34:06 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 23:41:59 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,8 @@ enum e_syntax
 {
 	INDEX = 0,
 	FLAG_Q = 1,
-	PIPE = 2
+	PIPE = 2,
+	REDIR = 3
 };
 
 enum e_type
@@ -181,5 +182,6 @@ void		set_parent_pipe(int *old, int *new, int isend);
 void		ft_err(int errnbr);
 int			check_syn_err(char *line);
 void		cmd_not_found(t_cmdline *cmdl);
+int			check_redir_err(t_table *cmdt);
 
 #endif

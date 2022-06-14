@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 19:09:33 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 15:23:03 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 23:49:20 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ t_table	*remove_quote(t_table *tokens)
 	token = tokens->head;
 	while (token->next)
 	{
-		if (token->type == REDIRECT && token->next && !token->next->type)
+		if (token->type == REDIRECT && !token->next->type)
 			token->next->type = FILENAME;
 		make_pure_token(token);
 		token = token->next;

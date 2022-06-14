@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:25:49 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 18:50:11 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 23:30:13 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,19 @@ void	handler_temp(int sig)
 	if (sig == SIGINT)
 		printf("\n");
 	if (sig == SIGQUIT)
-		return ;
+		printf("Quit: %d\n", sig);
 }
 
 void	handler_heredoc(int sig)
 {
 	if (sig == SIGINT)
-		exit(130);
+	{
+		printf("\r");
+		exit(1);
+	}
 	if (sig == SIGQUIT)
-		return ;
+	{
+		rl_on_new_line();
+		rl_redisplay();
+	}
 }

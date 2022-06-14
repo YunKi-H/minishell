@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 19:05:38 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 23:48:48 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,31 @@ int	check_syn_err(char *line)
 	}
 	if (counts[FLAG_Q] || counts[PIPE])
 		return (258);
+	return (0);
+}
+
+int	check_redir_err(t_table *cmdt)
+{
+	t_cmdline	*cmdl;
+	t_token		*token;
+
+	cmdl = cmdt->head;
+	while (cmdl)
+	{
+		token = cmdl->tokens->head;
+		while (token)
+		{
+			if (token->type == REDIRECT)
+			{
+				if (!token->next)
+					return (258);
+				if (token->next->type != FILENAME)
+					return (258);
+			}
+			token = token->next;
+		}
+		cmdl = cmdl->next;
+	}
 	return (0);
 }
 
