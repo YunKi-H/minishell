@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 16:43:28 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 16:55:14 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 19:03:48 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	ft_exit(t_sh *sh, t_cmdline *cmdl)
 			sh->sh_error = 1;
 		}
 		else
-			print_exit((unsigned char)ft_atoi(t->next->token));
+			print_exit(ft_atoi(t->next->token) & 0b11111111);
 	}
 	else
 	{

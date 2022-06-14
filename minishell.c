@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 18:47:29 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 19:05:38 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	main(int argc, char *argv[], char **envp)
 			write(2, "syntax error\n", 14);
 			continue ;
 		}
-		if (run_cmd(msh) > 256)
+		if (run_cmd(msh) > 255)
 			msh->sh_error >>= 8;
 	}
 }
