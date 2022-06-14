@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 18:34:03 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 23:31:15 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 00:25:57 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,14 +56,13 @@ void	redir_append(t_sh *sh, t_cmdline *cmdl, t_token *token)
 
 void	redir_heredoc(t_sh *sh, t_cmdline *cmdl, char *delimeter)
 {
-	int		fd[2];
+	int		fd[3];
 	char	*line;
-	int		pid;
 
 	ft_pipe(fd);
 	cmdl->input = fd[0];
-	pid = fork();
-	if (pid == 0)
+	fd[2] = fork();
+	if (fd[2] == 0)
 	{
 		ft_signal(&handler_heredoc);
 		close(fd[0]);
@@ -76,10 +75,11 @@ void	redir_heredoc(t_sh *sh, t_cmdline *cmdl, char *delimeter)
 			write(fd[1], "\n", 1);
 			free(line);
 		}
-		free(line);
 		exit(0);
 	}
-	waitpid(pid, &sh->sh_error, 0);
+	ft_signal(&handler_heredoc_p);
+	waitpid(fd[2], &sh->sh_error, 0);
+	ft_signal(&handler_default);
 	close(fd[1]);
 }
 

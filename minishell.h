@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 23:41:59 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 00:25:32 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ int			isbuiltin(t_cmdline *cmdl);
 // utils
 void		handler_default(int sig);
 void		handler_heredoc(int sig);
+void		handler_heredoc_p(int sig);
 void		handler_temp(int sig);
 void		ft_signal(void (*handler)(int));
 void		toggle_flag_quote(char c, int *flag);
