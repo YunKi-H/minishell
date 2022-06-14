@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:31:25 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 15:23:23 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 16:24:23 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ int	parsing(char *line, t_sh *sh)
 	int		flag_quote;
 	int		i;
 
+	if (check_syn_err(line))
+		return (258);
 	free_cmdt(sh->cmdt);
 	sh->cmdt = init_table();
 	buf = buf_new();

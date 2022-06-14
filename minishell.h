@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 15:18:46 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 17:02:18 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,13 @@ enum e_flag
 {
 	SINGLE_Q = 1,
 	DOUBLE_Q = 2
+};
+
+enum e_syntax
+{
+	INDEX = 0,
+	FLAG_Q = 1,
+	PIPE = 2
 };
 
 enum e_type
@@ -141,13 +148,13 @@ int			isnum(char *token);
 int			isemptyline(char *line);
 int			isbuiltin(t_cmdline *cmdl);
 // utils
-void		handler(int sig);
+void		handler_default(int sig);
 void		handler_heredoc(int sig);
+void		handler_temp(int sig);
 void		ft_signal(void (*handler)(int));
 void		toggle_flag_quote(char c, int *flag);
 t_env		*_getenv(char *key, t_table *envt);
 char		*ft_readline(const char *prompt);
-void		ft_err(int errnbr);
 // linked list -> char **
 char		**envttoevnp(t_table *envt);
 char		**cmdltocmdp(t_table *tokens);
@@ -170,7 +177,12 @@ void		ft_pipe(int *fd);
 void		init_pipe(int *p_old);
 void		set_child_pipe(t_cmdline *cmdl, int *old, int *new, int isend);
 void		set_parent_pipe(int *old, int *new, int isend);
+// err
+void		ft_err(int errnbr);
+int			check_syn_err(char *line);
+void		cmd_not_found(t_cmdline *cmdl);
 
 void	check_leaks(int n);
+void	print_cmdt(t_sh *sh);
 
 #endif

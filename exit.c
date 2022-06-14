@@ -6,11 +6,17 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 16:43:28 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 20:10:57 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 16:55:14 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	print_exit(int status)
+{
+	printf("exit\n");
+	exit(status);
+}
 
 int	ft_exit(t_sh *sh, t_cmdline *cmdl)
 {
@@ -20,8 +26,7 @@ int	ft_exit(t_sh *sh, t_cmdline *cmdl)
 	if (!t->next)
 	{
 		if (sh->cmdt->size == 1)
-			printf("exit\n");
-		exit(0);
+			print_exit(0);
 	}
 	if (isnum(t->next->token))
 	{
@@ -31,7 +36,7 @@ int	ft_exit(t_sh *sh, t_cmdline *cmdl)
 			sh->sh_error = 1;
 		}
 		else
-			exit((unsigned char)ft_atoi(t->next->token));
+			print_exit((unsigned char)ft_atoi(t->next->token));
 	}
 	else
 	{
