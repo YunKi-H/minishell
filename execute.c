@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:58:38 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 18:24:57 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 19:39:02 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,8 @@ int	run_cmd(t_sh *sh)
 	cmdl = sh->cmdt->head;
 	while (cmdl)
 	{
-		redirection_set(sh, cmdl);
+		if (redirection_set(sh, cmdl))
+			return (sh->sh_error);
 		cmdl = cmdl->next;
 	}
 	cmdl = sh->cmdt->head;

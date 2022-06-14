@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 18:47:32 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 19:34:06 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,9 +168,9 @@ int			ft_cd(t_sh *sh, t_cmdline *cmdl);
 int			ft_exit(t_sh *sh, t_cmdline *cmdl);
 // redirection
 int			redirection_set(t_sh *sh, t_cmdline *cmdl);
-void		redir_input(t_cmdline *cmdl, t_token *token);
-void		redir_output(t_cmdline *cmdl, t_token *token);
-void		redir_append(t_cmdline *cmdl, t_token *token);
+void		redir_input(t_sh *sh, t_cmdline *cmdl, t_token *token);
+void		redir_output(t_sh *sh, t_cmdline *cmdl, t_token *token);
+void		redir_append(t_sh *sh, t_cmdline *cmdl, t_token *token);
 void		redir_heredoc(t_sh *sh, t_cmdline *cmdl, char *delimeter);
 // pipe
 void		ft_pipe(int *fd);
