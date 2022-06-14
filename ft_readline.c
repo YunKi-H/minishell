@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:35:26 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 17:14:45 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 17:23:16 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ char	*ft_readline(const char *prompt)
 
 	tcgetattr(STDOUT_FILENO, &term_old);
 	tcgetattr(STDOUT_FILENO, &term_new);
-	term_new.c_lflag &= (~ECHOCTL);
+	term_new.c_lflag &= ~ECHOCTL;
 	tcsetattr(STDOUT_FILENO, TCSANOW, &term_new);
 	line = readline(prompt);
 	tcsetattr(STDOUT_FILENO, TCSANOW, &term_old);
