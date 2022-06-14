@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:25:49 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 23:30:13 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 00:27:32 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,12 @@ void	handler_heredoc(int sig)
 		rl_on_new_line();
 		rl_redisplay();
 	}
+}
+
+void	handler_heredoc_p(int sig)
+{
+	if (sig == SIGINT)
+		printf("\n");
+	if (sig == SIGQUIT)
+		return ;
 }
