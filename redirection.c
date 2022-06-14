@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 18:34:03 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 19:41:22 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 23:00:21 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void	redir_input(t_sh *sh, t_cmdline *cmdl, t_token *token)
 	cmdl->input = open(token->next->token, O_RDONLY);
 	if (cmdl->input < 0)
 	{
-		sh->sh_error = errno;
-		printf("%s: %s\n", token->next->token, strerror(sh->sh_error));
+		sh->sh_error = 1;
+		printf("%s: %s\n", token->next->token, strerror(errno));
 	}
 }
 
@@ -34,8 +34,8 @@ void	redir_output(t_sh *sh, t_cmdline *cmdl, t_token *token)
 	);
 	if (cmdl->output < 0)
 	{
-		sh->sh_error = errno;
-		printf("%s: %s\n", token->next->token, strerror(sh->sh_error));
+		sh->sh_error = 1;
+		printf("%s: %s\n", token->next->token, strerror(errno));
 	}
 }
 
@@ -49,8 +49,8 @@ void	redir_append(t_sh *sh, t_cmdline *cmdl, t_token *token)
 	);
 	if (cmdl->output < 0)
 	{
-		sh->sh_error = errno;
-		printf("%s: %s\n", token->next->token, strerror(sh->sh_error));
+		sh->sh_error = 1;
+		printf("%s: %s\n", token->next->token, strerror(errno));
 	}
 }
 
