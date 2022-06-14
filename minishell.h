@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 18:44:18 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 15:18:46 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,5 +170,7 @@ void		ft_pipe(int *fd);
 void		init_pipe(int *p_old);
 void		set_child_pipe(t_cmdline *cmdl, int *old, int *new, int isend);
 void		set_parent_pipe(int *old, int *new, int isend);
+
+void	check_leaks(int n);
 
 #endif
