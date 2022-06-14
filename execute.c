@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:58:38 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 18:44:29 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 19:39:02 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	exec_cmds(t_sh *sh, t_cmdline *cmdl)
 				exit(run_builtin(sh, cmdl));
 			else
 				if (excutor(sh, cmdl))
-					exit(127);
+					cmd_not_found(cmdl);
 		}
 		set_parent_pipe(fd, &fd[2], sh->cmdt->size - fd[4]);
 		cmdl = cmdl->next;
@@ -107,13 +107,16 @@ int	run_cmd(t_sh *sh)
 	cmdl = sh->cmdt->head;
 	while (cmdl)
 	{
-		redirection_set(sh, cmdl);
+		if (redirection_set(sh, cmdl))
+			return (sh->sh_error);
 		cmdl = cmdl->next;
 	}
 	cmdl = sh->cmdt->head;
+	ft_signal(&handler_temp);
 	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
 		exec_builtin_once(sh, cmdl);
 	else
 		exec_cmds(sh, cmdl);
+	ft_signal(&handler_default);
 	return (sh->sh_error);
 }

@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:34:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 18:42:43 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 18:23:55 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,14 +72,19 @@ static char	*find_file(t_token *token, char **paths, int i)
 
 char	*get_path(t_cmdline *cmdl, t_sh *sh)
 {
-	char **const	paths = ft_split(_getenv("PATH", sh->envt)->value, ':');
-	t_token			*token;
-	char			*p;
-	int				i;
+	char	**paths;
+	t_token	*token;
+	char	*p;
+	int		i;
+	t_env	*path;
 
 	token = cmdl->tokens->head;
 	while (token && token->type != CMD)
 		token = token->next;
+	path = _getenv("PATH", sh->envt);
+	if (!path)
+		return (token->token);
+	paths = ft_split(path->value, ':');
 	i = -1;
 	while (paths[++i])
 	{

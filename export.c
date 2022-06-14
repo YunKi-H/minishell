@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:46:45 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 14:45:31 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 19:25:57 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static int	export_valid_env(t_sh *sh, t_token *t)
 	return (0);
 }
 
-static void	env_with_declare(t_sh *sh)
+static int	env_with_declare(t_sh *sh)
 {
 	t_env	*env;
 
@@ -66,6 +66,7 @@ static void	env_with_declare(t_sh *sh)
 		printf("\n");
 		env = env->next;
 	}
+	return (0);
 }
 
 int	isvalid_key(char *key)
@@ -91,7 +92,7 @@ int	ft_export(t_sh *sh, t_cmdline *cmdl)
 
 	token = cmdl->tokens->head;
 	if (!token->next)
-		env_with_declare(sh);
+		return (env_with_declare(sh));
 	while (token)
 	{
 		if (token->next)

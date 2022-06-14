@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:35:26 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 19:53:41 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 18:45:39 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,22 @@
 char	*ft_readline(const char *prompt)
 {
 	char			*line;
-	struct termios	term;
+	struct termios	term_old;
+	struct termios	term_new;
 
-	tcgetattr(STDIN_FILENO, &term);
-	term.c_lflag &= ~ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	tcgetattr(STDOUT_FILENO, &term_old);
+	tcgetattr(STDOUT_FILENO, &term_new);
+	term_new.c_lflag &= ~ECHOCTL;
+	tcsetattr(STDOUT_FILENO, TCSANOW, &term_new);
 	line = readline(prompt);
-	term.c_lflag |= ECHOCTL;
-	tcsetattr(STDIN_FILENO, TCSANOW, &term);
+	tcsetattr(STDOUT_FILENO, TCSANOW, &term_old);
 	if (!line)
 	{
 		printf("\e[A%sexit\n", prompt);
 		exit(0);
 	}
-	if (!isemptyline(line))
-		add_history(line);
+	if (isemptyline(line))
+		return (NULL);
+	add_history(line);
 	return (line);
 }

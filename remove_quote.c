@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 19:09:33 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 19:09:41 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 15:23:03 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static void	make_pure_token(t_token *token)
 	token->token = ft_strdup(buf->buffer);
 	buf->len = 0;
 	buf->buffer[0] = '\0';
+	buf_destroy(buf);
 }
 
 t_table	*remove_quote(t_table *tokens)

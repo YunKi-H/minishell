@@ -6,22 +6,25 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 18:34:03 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 18:43:44 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 19:41:22 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	redir_input(t_cmdline *cmdl, t_token *token)
+void	redir_input(t_sh *sh, t_cmdline *cmdl, t_token *token)
 {
 	if (cmdl->input > 1)
 		close(cmdl->input);
 	cmdl->input = open(token->next->token, O_RDONLY);
 	if (cmdl->input < 0)
-		ft_err(errno);
+	{
+		sh->sh_error = errno;
+		printf("%s: %s\n", token->next->token, strerror(sh->sh_error));
+	}
 }
 
-void	redir_output(t_cmdline *cmdl, t_token *token)
+void	redir_output(t_sh *sh, t_cmdline *cmdl, t_token *token)
 {
 	if (cmdl->output > 1)
 		close(cmdl->output);
@@ -30,10 +33,13 @@ void	redir_output(t_cmdline *cmdl, t_token *token)
 	00666 \
 	);
 	if (cmdl->output < 0)
-		ft_err(errno);
+	{
+		sh->sh_error = errno;
+		printf("%s: %s\n", token->next->token, strerror(sh->sh_error));
+	}
 }
 
-void	redir_append(t_cmdline *cmdl, t_token *token)
+void	redir_append(t_sh *sh, t_cmdline *cmdl, t_token *token)
 {
 	if (cmdl->output > 1)
 		close(cmdl->output);
@@ -42,7 +48,10 @@ void	redir_append(t_cmdline *cmdl, t_token *token)
 	00666 \
 	);
 	if (cmdl->output < 0)
-		ft_err(errno);
+	{
+		sh->sh_error = errno;
+		printf("%s: %s\n", token->next->token, strerror(sh->sh_error));
+	}
 }
 
 void	redir_heredoc(t_sh *sh, t_cmdline *cmdl, char *delimeter)
@@ -84,17 +93,19 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 		if (token->type & REDIRECT)
 		{
 			if (!ft_strncmp(token->token, "<", -1))
-				redir_input(cmdl, token);
+				redir_input(sh, cmdl, token);
 			if (!ft_strncmp(token->token, ">", -1))
-				redir_output(cmdl, token);
+				redir_output(sh, cmdl, token);
 			if (!ft_strncmp(token->token, ">>", -1))
-				redir_append(cmdl, token);
+				redir_append(sh, cmdl, token);
 			if (!ft_strncmp(token->token, "<<", -1))
 			{
 				if (cmdl->input > 1)
 					close(cmdl->input);
 				redir_heredoc(sh, cmdl, token->next->token);
 			}
+			if (sh->sh_error)
+				return (sh->sh_error);
 		}
 		token = token->next;
 	}

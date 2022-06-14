@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:25:49 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 18:42:02 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 18:50:11 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	ft_signal(void (*handler)(int))
 	signal(SIGQUIT, handler);
 }
 
-void	handler(int sig)
+void	handler_default(int sig)
 {
 	if (sig == SIGQUIT)
 	{
@@ -32,6 +32,14 @@ void	handler(int sig)
 		rl_replace_line("", 0);
 		rl_redisplay();
 	}
+}
+
+void	handler_temp(int sig)
+{
+	if (sig == SIGINT)
+		printf("\n");
+	if (sig == SIGQUIT)
+		return ;
 }
 
 void	handler_heredoc(int sig)
