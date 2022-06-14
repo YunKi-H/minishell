@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:34:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 17:27:31 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 18:23:55 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,13 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 	int		i;
 	t_env	*path;
 
-	path = _getenv("PATH", sh->envt);
-	if (!path)
-		return (NULL);
-	paths = ft_split(path->value, ':');
 	token = cmdl->tokens->head;
 	while (token && token->type != CMD)
 		token = token->next;
+	path = _getenv("PATH", sh->envt);
+	if (!path)
+		return (token->token);
+	paths = ft_split(path->value, ':');
 	i = -1;
 	while (paths[++i])
 	{
