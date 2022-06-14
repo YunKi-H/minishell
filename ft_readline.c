@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:35:26 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 22:44:18 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 00:50:03 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ char	*ft_readline(const char *prompt)
 	tcsetattr(STDOUT_FILENO, TCSANOW, &term_old);
 	if (!line)
 	{
-		printf("\e[A%sexit\n", prompt);
+		if (ft_strncmp(prompt, "> ", -1))
+			printf("exit\n");
 		exit(0);
 	}
 	if (isemptyline(line))
