@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:25:49 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 17:02:09 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/14 18:50:11 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	handler_default(int sig)
 void	handler_temp(int sig)
 {
 	if (sig == SIGINT)
-		return ;
+		printf("\n");
 	if (sig == SIGQUIT)
 		return ;
 }
