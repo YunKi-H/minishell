@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:46:45 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 12:01:37 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 15:59:17 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,8 @@ static int	export_valid_env(t_sh *sh, t_token *t)
 		env->value = ft_strdup(ft_strchr(t->token, '=') + 1);
 	}
 	else
-	{
 		env_add_back(sh->envt, t->token);
-		free(key);
-	}
+	free(key);
 	return (0);
 }
 
