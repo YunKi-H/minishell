@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:58:38 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 19:39:02 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 10:26:20 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,11 @@ int	run_builtin(t_sh *sh, t_cmdline *cmdl)
 	cmd = cmdl->tokens->head;
 	while (cmd && cmd->type != CMD)
 		cmd = cmd->next;
-	if (!ft_strncmp(cmd->token, "cd", -1))
-		return (ft_cd(sh, cmdl));
 	if (!ft_strncmp(cmd->token, "echo", -1))
 		return (ft_echo(cmdl));
+	sh->sh_error = 0;
+	if (!ft_strncmp(cmd->token, "cd", -1))
+		return (ft_cd(sh, cmdl));
 	if (!ft_strncmp(cmd->token, "env", -1))
 		return (ft_env(sh->envt));
 	if (!ft_strncmp(cmd->token, "exit", -1))
