@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 16:43:28 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 09:55:33 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:37:37 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	print_exit(int status)
 {
-	printf("exit\n");
+	write(2, "exit\n", 5);
 	exit(status);
 }
 
@@ -32,7 +32,7 @@ int	ft_exit(t_sh *sh, t_cmdline *cmdl)
 	{
 		if (t->next->next)
 		{
-			printf("exit\nexit: too many arguments\n");
+			print_err("exit\n", "exit: too many arguments", "\n");
 			sh->sh_error = 1;
 		}
 		else
@@ -40,7 +40,8 @@ int	ft_exit(t_sh *sh, t_cmdline *cmdl)
 	}
 	else
 	{
-		printf("exit\nexit: %s: numeric argument required\n", t->next->token);
+		print_err("exit\nexit: ", t->next->token, \
+		": numeric argument required\n");
 		exit(255);
 	}
 	return (sh->sh_error);

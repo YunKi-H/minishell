@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 10:13:25 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:33:47 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,5 +184,6 @@ void		ft_err(int errnbr);
 int			check_syn_err(char *line);
 void		cmd_not_found(t_cmdline *cmdl);
 int			check_redir_err(t_table *cmdt, t_sh *sh);
+void		print_err(char *s1, char *s2, char *s3);
 
 #endif

@@ -6,7 +6,7 @@
 #    By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/13 11:39:56 by yuhwang           #+#    #+#              #
-#    Updated: 2022/06/13 19:59:15 by yuhwang          ###   ########.fr        #
+#    Updated: 2022/06/15 11:32:05 by yuhwang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,6 +47,7 @@ SRCS		=	minishell.c		\
 				tokenize.c		\
 				replace_env.c	\
 				remove_quote.c	\
+				error.c			\
 
 OBJS		=	$(SRCS:.c=.o)
 
