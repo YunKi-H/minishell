@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 23:48:48 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 10:13:08 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	check_syn_err(char *line)
 	return (0);
 }
 
-int	check_redir_err(t_table *cmdt)
+int	check_redir_err(t_table *cmdt, t_sh *sh)
 {
 	t_cmdline	*cmdl;
 	t_token		*token;
@@ -78,10 +78,11 @@ int	check_redir_err(t_table *cmdt)
 		{
 			if (token->type == REDIRECT)
 			{
-				if (!token->next)
+				if (!token->next || token->next->type != FILENAME)
+				{
+					sh->sh_error = 258;
 					return (258);
-				if (token->next->type != FILENAME)
-					return (258);
+				}
 			}
 			token = token->next;
 		}
