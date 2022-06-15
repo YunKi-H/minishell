@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:33:31 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 13:33:39 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:03:57 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,16 @@ char	**envttoevnp(t_table *envt)
 	i = 0;
 	while (tmp)
 	{
-		buf_append_str(buf, (char *)tmp->key);
-		buf_append(buf, '=');
-		buf_append_str(buf, (char *)tmp->value);
-		result[i] = ft_strdup(buf->buffer);
-		buf->len = 0;
-		buf->buffer[0] = '\0';
-		i += 1;
+		if (tmp->value)
+		{
+			buf_append_str(buf, (char *)tmp->key);
+			buf_append(buf, '=');
+			buf_append_str(buf, (char *)tmp->value);
+			result[i] = ft_strdup(buf->buffer);
+			buf->len = 0;
+			buf->buffer[0] = '\0';
+			i += 1;
+		}
 		tmp = tmp->next;
 	}
 	buf_destroy(buf);

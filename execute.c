@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:58:38 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 10:26:20 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:07:35 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int	run_builtin(t_sh *sh, t_cmdline *cmdl)
 
 int	excutor(t_sh *sh, t_cmdline *cl)
 {
+	printf("%s\n%s\n", get_path(cl, sh), cmdltocmdp(cl->tokens)[0]);
 	return (
 		execve(
 			get_path(cl, sh), \
