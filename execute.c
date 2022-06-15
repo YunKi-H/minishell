@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:58:38 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:11:53 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 15:28:29 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,11 @@ int	run_cmd(t_sh *sh)
 		cmdl = cmdl->next;
 	}
 	cmdl = sh->cmdt->head;
-	ft_signal(&handler_temp);
+	ft_signal(&handler_nothing);
+	if (ft_strnstr(find_cmd(cmdl)->token, "minishell", -1))
+		if (ft_strncmp(ft_strnstr(find_cmd(cmdl)->token, "minishell", -1), \
+		"minishell", -1))
+			ft_signal(&handler_temp);
 	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
 		exec_builtin_once(sh, cmdl);
 	else

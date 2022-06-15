@@ -6,17 +6,11 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:25:49 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 00:27:32 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 15:35:56 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	ft_signal(void (*handler)(int))
-{
-	signal(SIGINT, handler);
-	signal(SIGQUIT, handler);
-}
 
 void	handler_default(int sig)
 {
@@ -60,6 +54,14 @@ void	handler_heredoc_p(int sig)
 {
 	if (sig == SIGINT)
 		printf("\n");
+	if (sig == SIGQUIT)
+		return ;
+}
+
+void	handler_nothing(int sig)
+{
+	if (sig == SIGINT)
+		return ;
 	if (sig == SIGQUIT)
 		return ;
 }
