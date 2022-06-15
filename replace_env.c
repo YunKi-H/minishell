@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 19:45:34 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 19:53:13 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 09:41:15 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,14 @@ static int	replace_env_value(char *cmdl, t_sh *sh, t_buf *buf, int idx)
 	key_len = 0;
 	idx += 1;
 	while (iskey(cmdl[idx + key_len]) && cmdl[idx + key_len] != '$')
+	{
+		if (ft_isdigit(cmdl[idx + key_len]))
+		{
+			key_len = 1;
+			break ;
+		}
 		key_len += 1;
+	}
 	key = ft_substr(cmdl, idx, key_len);
 	env = _getenv(key, sh->envt);
 	if (env)
