@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:33:47 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:58:04 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,8 @@ void		free_args(char **args);
 void		env_add_back(t_table *envt, char *env);
 void		cmdl_add_back(t_table *cmdt, t_cmdline *cmdl);
 void		token_add_back(t_table *tokens, char *token, int type);
+t_token		*find_cmd(t_cmdline *cmdl);
+t_token		*find_next_arg(t_token *token);
 // parse
 int			parsing(char *readline, t_sh *sh);
 char		*replace_env(char *cmdline, t_sh *sh);
