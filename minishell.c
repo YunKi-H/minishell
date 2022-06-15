@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:42:05 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 15:36:00 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,10 @@ int	main(int argc, char *argv[], char **envp)
 		if (run_cmd(msh) > 255)
 			msh->sh_error >>= 8;
 	}
+}
+
+void	ft_signal(void (*handler)(int))
+{
+	signal(SIGINT, handler);
+	signal(SIGQUIT, handler);
 }
