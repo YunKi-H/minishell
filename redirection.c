@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 18:34:03 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 00:47:06 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 17:55:46 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,14 @@
 
 void	redir_input(t_sh *sh, t_cmdline *cmdl, t_token *token)
 {
-	if (cmdl->input > 1)
+	if (cmdl->input > 0)
 		close(cmdl->input);
 	cmdl->input = open(token->next->token, O_RDONLY);
 	if (cmdl->input < 0)
 	{
 		sh->sh_error = 1;
-		printf("%s: %s\n", token->next->token, strerror(errno));
+		print_err(token->next->token, ": ", strerror(errno));
+		write(2, "\n", 1);
 	}
 }
 
@@ -35,7 +36,8 @@ void	redir_output(t_sh *sh, t_cmdline *cmdl, t_token *token)
 	if (cmdl->output < 0)
 	{
 		sh->sh_error = 1;
-		printf("%s: %s\n", token->next->token, strerror(errno));
+		print_err(token->next->token, ": ", strerror(errno));
+		write(2, "\n", 1);
 	}
 }
 
@@ -50,7 +52,8 @@ void	redir_append(t_sh *sh, t_cmdline *cmdl, t_token *token)
 	if (cmdl->output < 0)
 	{
 		sh->sh_error = 1;
-		printf("%s: %s\n", token->next->token, strerror(errno));
+		print_err(token->next->token, ": ", strerror(errno));
+		write(2, "\n", 1);
 	}
 }
 
@@ -77,10 +80,10 @@ void	redir_heredoc(t_sh *sh, t_cmdline *cmdl, char *delimeter)
 		}
 		exit(0);
 	}
+	close(fd[1]);
 	ft_signal(&handler_heredoc_p);
 	waitpid(fd[2], &sh->sh_error, 0);
 	ft_signal(&handler_default);
-	close(fd[1]);
 }
 
 int	redirection_set(t_sh *sh, t_cmdline *cmdl)
@@ -100,7 +103,7 @@ int	redirection_set(t_sh *sh, t_cmdline *cmdl)
 				redir_append(sh, cmdl, token);
 			if (!ft_strncmp(token->token, "<<", -1))
 			{
-				if (cmdl->input > 1)
+				if (cmdl->input > 0)
 					close(cmdl->input);
 				redir_heredoc(sh, cmdl, token->next->token);
 			}

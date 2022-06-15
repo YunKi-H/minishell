@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:34:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 18:23:55 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 16:31:40 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,9 +78,9 @@ char	*get_path(t_cmdline *cmdl, t_sh *sh)
 	int		i;
 	t_env	*path;
 
-	token = cmdl->tokens->head;
-	while (token && token->type != CMD)
-		token = token->next;
+	token = find_cmd(cmdl);
+	if (!token)
+		return (NULL);
 	path = _getenv("PATH", sh->envt);
 	if (!path)
 		return (token->token);

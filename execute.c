@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:58:38 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 15:50:16 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 17:55:34 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,11 @@ int	run_builtin(t_sh *sh, t_cmdline *cmdl)
 
 int	excutor(t_sh *sh, t_cmdline *cl)
 {
+	char	*path;
+
+	path = get_path(cl, sh);
+	if (!path)
+		return (1);
 	return (
 		execve(
 			get_path(cl, sh), \
@@ -70,6 +75,8 @@ void	exec_builtin_once(t_sh *sh, t_cmdline *cmdl)
 	sh->sh_error = run_builtin(sh, sh->cmdt->head);
 	dup2(stdfd[0], 0);
 	dup2(stdfd[1], 1);
+	close(stdfd[0]);
+	close(stdfd[1]);
 }
 
 void	exec_cmds(t_sh *sh, t_cmdline *cmdl)
@@ -91,13 +98,13 @@ void	exec_cmds(t_sh *sh, t_cmdline *cmdl)
 			else
 				if (excutor(sh, cmdl))
 					cmd_not_found(cmdl);
+			exit(0);
 		}
-		set_parent_pipe(fd, &fd[2], sh->cmdt->size - fd[4]);
+		set_parent_pipe(fd, &fd[2], !cmdl->next, cmdl);
 		cmdl = cmdl->next;
 	}
-	fd[4] = 0;
-	while (fd[4] < sh->cmdt->size)
-		waitpid(pid[fd[4]++], &sh->sh_error, 0);
+	while (fd[4])
+		waitpid(pid[--fd[4]], &sh->sh_error, 0);
 	free(pid);
 }
 
@@ -114,7 +121,7 @@ int	run_cmd(t_sh *sh)
 	}
 	cmdl = sh->cmdt->head;
 	ft_signal(&handler_temp);
-	if (ft_strrchr(find_cmd(cmdl)->token, 'm'))
+	if (find_cmd(cmdl) && ft_strrchr(find_cmd(cmdl)->token, 'm'))
 		if (!ft_strncmp(ft_strrchr(find_cmd(cmdl)->token, 'm'), \
 		"minishell", -1))
 			ft_signal(&handler_nothing);

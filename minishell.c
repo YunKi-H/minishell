@@ -6,11 +6,19 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 15:36:00 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 17:04:54 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static void	exit_status(int status, t_sh *sh)
+{
+	if (WIFEXITED(status))
+		sh->sh_error = WEXITSTATUS(status);
+	if (WIFSIGNALED(status))
+		sh->sh_error = WTERMSIG(status) + 128;
+}
 
 int	main(int argc, char *argv[], char **envp)
 {
@@ -31,8 +39,7 @@ int	main(int argc, char *argv[], char **envp)
 			write(2, "syntax error\n", 14);
 			continue ;
 		}
-		if (run_cmd(msh) > 255)
-			msh->sh_error >>= 8;
+		exit_status(run_cmd(msh), msh);
 	}
 }
 
