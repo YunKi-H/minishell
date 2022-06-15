@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/09 09:30:42 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 19:39:13 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 19:57:01 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,12 @@ int	main(int argc, char *argv[], char **envp)
 			continue ;
 		if (parsing(line, msh))
 		{
+			free(line);
 			msh->sh_error = 258;
 			write(2, "syntax error\n", 14);
 			continue ;
 		}
+		free(line);
 		msh->sh_error = 0;
 		run_cmd(msh);
 	}
