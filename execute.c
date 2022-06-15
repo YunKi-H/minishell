@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:58:38 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 17:55:34 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 18:26:26 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,10 @@ int	run_cmd(t_sh *sh)
 	if (isbuiltin(sh->cmdt->head) && sh->cmdt->size == 1)
 		exec_builtin_once(sh, cmdl);
 	else
+	{
 		exec_cmds(sh, cmdl);
+		exit_status(sh->sh_error, sh);
+	}
 	ft_signal(&handler_default);
 	return (sh->sh_error);
 }

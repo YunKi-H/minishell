@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 11:31:07 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 16:34:46 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 18:46:45 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int	check_syn_err(char *line)
 
 	ft_bzero(counts, 3 * sizeof(int));
 	counts[INDEX] = -1;
+	counts[PIPE] = -1;
 	while (line[++counts[INDEX]])
 	{
 		if (isifs(line[counts[INDEX]]))
