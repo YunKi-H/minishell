@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:31:25 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 23:47:59 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 10:13:14 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,5 @@ int	parsing(char *line, t_sh *sh)
 	}
 	buf_destroy(buf);
 	free(line);
-	return (check_redir_err(sh->cmdt));
+	return (check_redir_err(sh->cmdt, sh));
 }
