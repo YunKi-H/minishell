@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 16:43:28 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 19:03:48 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 09:55:33 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,10 @@ int	isnum(char *token)
 	int	i;
 
 	i = 0;
+	if (token[i] == '+' || token[i] == '-')
+		i += 1;
+	if (!token[i])
+		return (FALSE);
 	while (token[i])
 	{
 		if (token[i] < '0' || token[i] > '9')
