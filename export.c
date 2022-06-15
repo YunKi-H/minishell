@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:46:45 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/14 19:25:57 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:07:01 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static void	export_empty_val(t_sh *sh, t_token *token)
 		while (env->next)
 			env = env->next;
 		env->next = init_env(ft_strdup(token->token), NULL);
+		sh->envt->size += 1;
 	}
 }
 
