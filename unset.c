@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:47:07 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 18:40:42 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:24:11 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,19 @@ int	ft_unset(t_sh *sh, t_cmdline *cmdl)
 	t_token	*token;
 
 	token = cmdl->tokens->head;
+	while (token->type != CMD)
+		token = token->next;
 	while (token)
 	{
 		if (token->next)
 			token = token->next;
 		else
 			break ;
+		if (token->type > 1)
+			continue ;
 		if (!isvalid_key(token->token))
 		{
-			printf("export: `%s': not a valid identifier\n", token->token);
+			printf("unset: `%s': not a valid identifier\n", token->token);
 			sh->sh_error = 1;
 			continue ;
 		}

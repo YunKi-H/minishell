@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:46:45 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:07:01 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:39:11 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int	export_valid_env(t_sh *sh, t_token *t)
 	key = ft_substr(t->token, 0, ft_strchr(t->token, '=') - t->token);
 	if (!isvalid_key(key))
 	{
-		printf("export: `%s': not a valid identifier\n", t->token);
+		print_err("export: `", t->token, "': not a valid identifier\n");
 		sh->sh_error = 1;
 		free(key);
 		return (1);
@@ -104,7 +104,7 @@ int	ft_export(t_sh *sh, t_cmdline *cmdl)
 			export_empty_val(sh, token);
 		else if (!ft_strchr(token->token, '=') && !isvalid_key(token->token))
 		{
-			printf("export: `%s': not a valid identifier\n", token->token);
+			print_err("export: `", token->token, "': not a valid identifier\n");
 			sh->sh_error = 1;
 			continue ;
 		}
