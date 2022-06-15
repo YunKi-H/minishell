@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 18:36:14 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 18:44:15 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 17:55:56 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,21 @@ void	set_child_pipe(t_cmdline *cmdl, int *p_old, int *p_new, int isend)
 	}
 }
 
-void	set_parent_pipe(int *p_old, int *p_new, int isend)
+void	set_parent_pipe(int *p_old, int *p_new, int isend, t_cmdline *cmdl)
 {
 	close(p_old[0]);
 	close(p_old[1]);
 	p_old[0] = p_new[0];
 	p_old[1] = p_new[1];
-	if (isend == 1)
+	if (isend)
 	{
 		close(p_old[0]);
 		close(p_old[1]);
 	}
+	if (cmdl->input > 0)
+		close(cmdl->input);
+	if (cmdl->output > 1)
+		close(cmdl->output);
 }
 
 void	init_pipe(int *p_old)

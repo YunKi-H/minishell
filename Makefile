@@ -6,14 +6,14 @@
 #    By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/13 11:39:56 by yuhwang           #+#    #+#              #
-#    Updated: 2022/06/15 11:32:05 by yuhwang          ###   ########.fr        #
+#    Updated: 2022/06/15 16:18:26 by yuhwang          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		=	minishell
 
 CC			=	cc
-CFLAGS		=	-Wall -Wextra -Werror
+CFLAGS		=	-Wall -Wextra -Werror -fsanitize=address -g
 RM			=	rm -f
 
 LIBFTDIR	=	../libft

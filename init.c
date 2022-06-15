@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:26:34 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/13 14:14:35 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 16:25:42 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ t_table	*init_envt(char **envp)
 	if (!envt)
 		return (NULL);
 	envt->head = NULL;
+	envt->size = 0;
 	i = 0;
 	while (envp[i])
 	{

@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 15:35:49 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 17:54:29 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ void		redir_heredoc(t_sh *sh, t_cmdline *cmdl, char *delimeter);
 void		ft_pipe(int *fd);
 void		init_pipe(int *p_old);
 void		set_child_pipe(t_cmdline *cmdl, int *old, int *new, int isend);
-void		set_parent_pipe(int *old, int *new, int isend);
+void		set_parent_pipe(int *p_old, int *p_new, int isend, t_cmdline *cmdl);
 // err
 void		ft_err(int errnbr);
 int			check_syn_err(char *line);
