@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:48:40 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:34:56 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:41:31 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	ft_cd(t_sh *sh, t_cmdline *cmdl)
 	{
 		if (chdir(tmp->next->token) == -1)
 		{
-			print_error("cd: ", tmp->next->token, \
+			print_err("cd: ", tmp->next->token, \
 			": No such file or directory\n");
 			sh->sh_error = 1;
 		}
