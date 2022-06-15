@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/15 11:31:07 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:33:03 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 12:17:30 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	cmd_not_found(t_cmdline *cmdl)
 	cmd = cmdl->tokens->head;
 	while (cmd->type != CMD)
 		cmd = cmd->next;
-	printf("command not found: %s\n", cmd->token);
+	print_err("command not found: ", cmd->token, "\n");
 	exit(127);
 }
 
