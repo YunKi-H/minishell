@@ -6,11 +6,32 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:48:40 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:41:31 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 12:12:29 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+t_token	*find_cmd(t_cmdline *cmdl)
+{
+	t_token	*cmd;
+
+	cmd = cmdl->tokens->head;
+	while (cmd && cmd->type != CMD)
+		cmd = cmd->next;
+	return (cmd);
+}
+
+t_token	*find_next_arg(t_token *token)
+{
+	while (token)
+	{
+		token = token->next;
+		if (token && token->type == ARG)
+			break ;
+	}
+	return (token);
+}
 
 static void	update_pwd(t_sh *sh)
 {
@@ -41,7 +62,7 @@ static void	update_pwd(t_sh *sh)
 
 int	ft_cd(t_sh *sh, t_cmdline *cmdl)
 {
-	const t_token	*tmp = cmdl->tokens->head;
+	const t_token	*tmp = (const t_token *)find_cmd(cmdl);
 	const t_env		*env = _getenv("HOME", sh->envt);
 
 	if (cmdl->tokens->size == 1)
@@ -56,9 +77,9 @@ int	ft_cd(t_sh *sh, t_cmdline *cmdl)
 	}
 	else
 	{
-		if (chdir(tmp->next->token) == -1)
+		if (chdir(find_next_arg((t_token *)tmp)->token) == -1)
 		{
-			print_err("cd: ", tmp->next->token, \
+			print_err("cd: ", find_next_arg((t_token *)tmp)->token, \
 			": No such file or directory\n");
 			sh->sh_error = 1;
 		}

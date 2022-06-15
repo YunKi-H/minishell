@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 16:43:28 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:37:37 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 11:58:20 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,25 +22,25 @@ int	ft_exit(t_sh *sh, t_cmdline *cmdl)
 {
 	t_token	*t;
 
-	t = cmdl->tokens->head;
-	if (!t->next)
+	t = find_cmd(cmdl);
+	if (!find_next_arg(t))
 	{
 		if (sh->cmdt->size == 1)
 			print_exit(0);
 	}
-	if (isnum(t->next->token))
+	if (isnum(find_next_arg(t)->token))
 	{
-		if (t->next->next)
+		if (find_next_arg(find_next_arg(t)))
 		{
 			print_err("exit\n", "exit: too many arguments", "\n");
 			sh->sh_error = 1;
 		}
 		else
-			print_exit(ft_atoi(t->next->token) & 0b11111111);
+			print_exit(ft_atoi(find_next_arg(t)->token) & 0b11111111);
 	}
 	else
 	{
-		print_err("exit\nexit: ", t->next->token, \
+		print_err("exit\nexit: ", find_next_arg(t)->token, \
 		": numeric argument required\n");
 		exit(255);
 	}

@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:46:45 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 11:39:11 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/15 12:01:37 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,13 +91,13 @@ int	ft_export(t_sh *sh, t_cmdline *cmdl)
 {
 	t_token	*token;
 
-	token = cmdl->tokens->head;
-	if (!token->next)
+	token = find_cmd(cmdl);
+	if (!find_next_arg(token))
 		return (env_with_declare(sh));
 	while (token)
 	{
-		if (token->next)
-			token = token->next;
+		if (find_next_arg(token))
+			token = find_next_arg(token);
 		else
 			break ;
 		if (!ft_strchr(token->token, '=') && isvalid_key(token->token))
