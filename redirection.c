@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 18:34:03 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 19:31:12 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/16 12:07:51 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	redir_heredoc(t_sh *sh, t_cmdline *cmdl, char *delimeter)
 		close(fd[0]);
 		while (TRUE)
 		{
-			line = ft_readline("> ");
+			line = ft_readline_heredoc("> ");
 			if (!ft_strncmp(delimeter, line, -1))
 				break ;
 			write(fd[1], line, ft_strlen(line));

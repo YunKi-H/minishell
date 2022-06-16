@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 11:39:15 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 18:24:50 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/16 12:08:09 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,6 +160,7 @@ void		ft_signal(void (*handler)(int));
 void		toggle_flag_quote(char c, int *flag);
 t_env		*_getenv(char *key, t_table *envt);
 char		*ft_readline(const char *prompt);
+char		*ft_readline_heredoc(const char *prompt);
 // linked list -> char **
 char		**envttoevnp(t_table *envt);
 char		**cmdltocmdp(t_table *tokens);
