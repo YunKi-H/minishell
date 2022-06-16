@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 14:47:07 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 12:14:54 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/16 11:35:06 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	remove_env(t_sh *sh, t_token *token)
 	}
 	if (!ft_strncmp(env->key, token->token, -1))
 	{
-		if (prev == sh->envt->head)
+		if (env == sh->envt->head)
 			sh->envt->head = env->next;
 		else
 			prev->next = env->next;
