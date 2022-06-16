@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:35:26 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 00:50:03 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/16 11:18:38 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,10 @@ char	*ft_readline(const char *prompt)
 		exit(0);
 	}
 	if (isemptyline(line))
+	{
+		free(line);
 		return (NULL);
+	}
 	add_history(line);
 	return (line);
 }
