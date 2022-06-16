@@ -6,7 +6,7 @@
 /*   By: yuhwang <yuhwang@student.42seoul.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/13 13:58:38 by yuhwang           #+#    #+#             */
-/*   Updated: 2022/06/15 18:26:26 by yuhwang          ###   ########.fr       */
+/*   Updated: 2022/06/16 10:59:19 by yuhwang          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ void	exec_cmds(t_sh *sh, t_cmdline *cmdl)
 		cmdl = cmdl->next;
 	}
 	while (fd[4])
-		waitpid(pid[--fd[4]], &sh->sh_error, 0);
+		waitpid(pid[sh->cmdt->size - fd[4]--], &sh->sh_error, 0);
 	free(pid);
 }
 
